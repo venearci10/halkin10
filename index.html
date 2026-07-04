@@ -12,6 +12,17 @@
   
   </head>
   <body>
+  
     <div id="root"></div>
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register("./sw.js')
+        .then(() => console.log('PWA Service Worker registrado'))
+        .catch(err => console.log('Error:', err));
+    });
+  }
+</script>
+
+
+  </body>
   </body>
 </html>
