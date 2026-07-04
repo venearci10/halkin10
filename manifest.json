@@ -1,7 +1,7 @@
 {
   "name": "halkin10",
   "short_name": "Halkin 10",
-  "start_url": "imdex.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
