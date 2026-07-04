@@ -1,4 +1,25 @@
-self.addEventListener('fetch', (event) => {
-  // Este es un Service Worker vacío para que el navegador 
-  // reconozca tu página como una aplicación instalable.
+const CACHE_NAME = 'venearci-cache-v1';
+const assets = [
+  './',
+  './index.html',
+  './manifest.json'
+];
+
+// Instalar el Service Worker
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(assets);
+    })
+  );
 });
+
+// Activar y responder de manera local
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(cachedResponse => {
+      return cachedResponse || fetch(event.request);
+    })
+  );
+});
+    
