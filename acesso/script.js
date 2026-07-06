@@ -86,7 +86,7 @@ document.getElementById('form-completar-registro').addEventListener('submit', as
         });
 
         showStatus("¡Éxito! Redirigiendo a tu cuenta...", "success");
-        setTimeout(() => { window.location.href = "app.html"; }, 1500);
+        setTimeout(() => { window.location.href = "https://task-done-951759405463.us-east1.run.app/"; }, 1500);
         
     } catch (error) {
         showStatus("Error: " + error.message, "error");
