@@ -4,7 +4,7 @@ import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } 
 
 // Credenciales vinculadas de tu captura de pantalla para el proyecto halkin10
 const firebaseConfig = {
-    apiKey: "AIzaSyC_QVqEUFopfS29g_jR4vU4oB-K-F-Wq_4", 
+    apiKey: "AIzaSyC_QVqEUFopf4AtMe4Ov9WvG4hCdX4DKNo", 
     authDomain: "halkin10-3868a.firebaseapp.com",
     projectId: "halkin10-3868a",
     storageBucket: "halkin10-3868a.appspot.com",
