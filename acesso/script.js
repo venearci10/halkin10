@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Credenciales de tu proyecto Halkin 10
@@ -33,7 +33,7 @@ function cambiarPantalla(pasoId, descripcion) {
     statusBox.style.display = 'none';
 }
 
-// 1. EVALUAR CORREO
+// 1. EVALUAR CORREO (Determina si es usuario nuevo o viejo)
 document.getElementById('form-email-check').addEventListener('submit', async (e) => {
     e.preventDefault();
     emailGlobal = document.getElementById('user-email').value.trim().toLowerCase();
@@ -45,9 +45,11 @@ document.getElementById('form-email-check').addEventListener('submit', async (e)
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-            cambiarPantalla('step-login', 'Autenticación Biométrica');
+            // El usuario existe: Vamos a la pantalla de Login y disparamos el lector
+            cambiarPantalla('step-login', 'Autenticación de Acceso');
             dispararLectorBiometrico();
         } else {
+            // No existe: Lo mandamos al registro de huella único
             cambiarPantalla('step-register', 'Completa tu registro único');
         }
     } catch (error) {
@@ -55,7 +57,7 @@ document.getElementById('form-email-check').addEventListener('submit', async (e)
     }
 });
 
-// 2. REGISTRO
+// 2. PROCESO DE REGISTRO NUEVO
 document.getElementById('form-completar-registro').addEventListener('submit', async (e) => {
     e.preventDefault();
     const rawUsername = document.getElementById('reg-username').value;
@@ -91,11 +93,10 @@ document.getElementById('form-completar-registro').addEventListener('submit', as
     }
 });
 
-// 3. LECTOR BIOMÉTRICO
+// 3. LECTOR BIOMÉTRICO (VÍA RÁPIDA)
 async function dispararLectorBiometrico() {
-    showStatus("Activando sensor...", "info");
+    showStatus("Activando sensor de huella...", "info");
     
-    // Configuración estándar WebAuthn
     const authOptions = {
         challenge: new Uint8Array([24, 53, 11, 99, 87, 41, 12, 54]),
         timeout: 60000,
@@ -107,8 +108,30 @@ async function dispararLectorBiometrico() {
         showStatus("¡Validación exitosa! Entrando...", "success");
         setTimeout(() => { window.location.href = "app.html"; }, 1000);
     } catch (error) {
-        showStatus("Validación biométrica no completada.", "error");
+        showStatus("Validación biométrica no completada. Puedes usar tu contraseña abajo.", "error");
     }
 }
 
 document.getElementById('btn-activar-huella').addEventListener('click', dispararLectorBiometrico);
+
+// 4. ALTERNAR ENLACE DE CONTRASEÑA MÁGICA
+document.getElementById('link-usar-password').addEventListener('click', (e) => {
+    e.preventDefault();
+    const formFallback = document.getElementById('form-password-fallback');
+    formFallback.style.display = formFallback.style.display === 'none' ? 'block' : 'none';
+});
+
+// 5. LOGIN CLÁSICO CON CONTRASEÑA (RESPALDO SI FALLA LA HUELLA)
+document.getElementById('form-password-fallback').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const passwordInput = document.getElementById('login-password').value;
+    showStatus("Verificando contraseña de respaldo...", "info");
+
+    try {
+        await signInWithEmailAndPassword(auth, emailGlobal, passwordInput);
+        showStatus("¡Identidad confirmada! Ingresando...", "success");
+        setTimeout(() => { window.location.href = "app.html"; }, 1200);
+    } catch (error) {
+        showStatus("Contraseña incorrecta. Revisa tus datos.", "error");
+    }
+});
