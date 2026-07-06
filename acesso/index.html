@@ -1,1 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Inteligente - Venearci</title>
+    <!-- Enlace al archivo de estilos separados -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <img src="https://raw.githubusercontent.com/venearci10/halkin10/refs/heads/main/Halkin1.png" width="180px" height="150px">
+        <h1>Plataforma Halkin 10</h1>
+        <p id="header-desc">Ingresa tu correo para comenzar</p>
+    </div>
+
+    <!-- PASO 1: VERIFICACIÓN DE CORREO -->
+    <div id="step-email" class="step-section active">
+        <form id="form-email-check">
+            <div class="input-group">
+                <label for="user-email">Correo Electrónico</label>
+                <input type="email" id="user-email" placeholder="ejemplo@correo.com" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Continuar →</button>
+        </form>
+    </div>
+
+    <!-- PASO 2A: REGISTRO DE NUEVO USUARIO -->
+    <div id="step-register" class="step-section">
+        <form id="form-completar-registro">
+            <div class="input-group">
+                <label for="reg-username">Elige tu ID único (Nombre de usuario)</label>
+                <div class="username-prefix">
+                    <input type="text" id="reg-username" placeholder="tu_usuario" required>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="reg-fullname">Nombre Completo</label>
+                <input type="text" id="reg-fullname" placeholder="Ej: Ángel Arcila" required>
+            </div>
+            <div class="input-group">
+                <label for="reg-password">Contraseña (De respaldo)</label>
+                <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required>
+            </div>
+            <button type="submit" class="btn btn-success">Guardar y Vincular Huella ☝️</button>
+        </form>
+    </div>
+
+    <!-- PASO 2B: INICIO DE SESIÓN BIOMÉTRICO (USUARIO EXISTENTE) -->
+    <div id="step-login" class="step-section">
+        <p style="text-align: center; margin-bottom: 20px; color: #555;">¡Hola de nuevo! Detectamos tu cuenta activa.</p>
+        <button type="button" class="btn btn-primary" id="btn-activar-huella">
+            ☝️ Escanear Huella para Entrar
+        </button>
+    </div>
+
+    <!-- Alertas y Estado de procesos -->
+    <div id="status-message" class="status-box"></div>
+</div>
+
+<!-- Enlace al archivo lógico tipo módulo para soportar imports de Firebase -->
+<script type="module" src="script.js"></script>
+</body>
+  </html>
 
