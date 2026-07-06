@@ -50,20 +50,28 @@
     </div>
 
     <!-- PASO 2B: INICIO DE SESIÓN BIOMÉTRICO (USUARIO EXISTENTE) -->
-    <div id="step-login" class="step-section">
-        <p style="text-align: center; margin-bottom: 20px; color: #555;">¡Hola de nuevo! Detectamos tu cuenta activa.</p>
-        <button type="button" class="btn btn-primary" id="btn-activar-huella">
-            ☝️ Escanear Huella para Entrar
-        </button>
-    </div>
+   <div id="step-login" class="step-section">
+    <button type="button" id="btn-activar-huella" class="btn-green">Usar Huella Dactilar ☝️</button>
+    
+    <div class="divisor">ó</div>
+
+    <a href="#" id="link-usar-password" class="toggle-link">Entrar con contraseña de respaldo</a>
+
+    <form id="form-password-fallback" style="display: none; margin-top: 15px;">
+        <div class="input-group">
+            <label for="login-password">Introduce tu contraseña</label>
+            <input type="password" id="login-password" required placeholder="********">
+        </div>
+        <button type="submit" class="btn-green" style="margin-top: 10px;">Verificar Contraseña</button>
+    </form>
+</div>
 
     <!-- Alertas y Estado de procesos -->
     <div id="status-message" class="status-box"></div>
 </div>
 
 <!-- Enlace al archivo lógico tipo módulo para soportar imports de Firebase -->
+<script type="module" src="acceso/script1.js"></script>
 
-<script type="module" src="acceso/script.js?v=1.1"></script>
 </body>
-              </html>
-  
+</html>
