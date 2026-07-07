@@ -45,11 +45,11 @@ document.getElementById('form-email-check').addEventListener('submit', async (e)
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-            // El usuario existe: Vamos a la pantalla de Login y disparamos el lector
+            // El usuario existe en Firestore
             cambiarPantalla('step-login', 'Autenticación de Acceso');
             dispararLectorBiometrico();
         } else {
-            // No existe: Lo mandamos al registro de huella único
+            // No existe en Firestore (Ojo: podría existir en Auth si hubo una desincronización previa)
             cambiarPantalla('step-register', 'Completa tu registro único');
         }
     } catch (error) {
@@ -68,6 +68,7 @@ document.getElementById('form-completar-registro').addEventListener('submit', as
     showStatus("Procesando registro...", "info");
 
     try {
+        // Verificar disponibilidad del Username en Firestore
         const userDocRef = doc(db, "usuarios", cleanUsername);
         const userSnapshot = await getDoc(userDocRef);
 
@@ -76,7 +77,10 @@ document.getElementById('form-completar-registro').addEventListener('submit', as
             return;
         }
 
+        // Crear usuario en Firebase Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, emailGlobal, password);
+        
+        // Guardar datos en Firestore usando el cleanUsername como ID del documento
         await setDoc(doc(db, "usuarios", cleanUsername), {
             uid: userCredential.user.uid,
             username: cleanUsername,
@@ -89,7 +93,18 @@ document.getElementById('form-completar-registro').addEventListener('submit', as
         setTimeout(() => { window.location.href = "https://task-done-951759405463.us-east1.run.app/"; }, 1500);
         
     } catch (error) {
-        showStatus("Error: " + error.message, "error");
+        // CONTROL CLAVE: Si a pesar de pasar el paso 1, el correo ya existía en la Auth de Firebase
+        if (error.code === 'auth/email-already-in-use') {
+            showStatus("Este correo ya está registrado. Redirigiéndote al inicio de sesión...", "error");
+            setTimeout(() => {
+                cambiarPantalla('step-login', 'Autenticación de Acceso');
+                dispararLectorBiometrico();
+            }, 2000);
+        } else if (error.code === 'auth/weak-password') {
+            showStatus("La contraseña debe tener al menos 6 caracteres.", "error");
+        } else {
+            showStatus("Error en el registro: " + error.message, "error");
+        }
     }
 });
 
@@ -106,7 +121,7 @@ async function dispararLectorBiometrico() {
     try {
         await navigator.credentials.get({ publicKey: authOptions });
         showStatus("¡Validación exitosa! Entrando...", "success");
-        setTimeout(() => { window.location.href = "app.html"; }, 1000);
+        setTimeout(() => { window.location.href = "https://task-done-951759405463.us-east1.run.app/"; }, 1000);
     } catch (error) {
         showStatus("Validación biométrica no completada. Puedes usar tu contraseña abajo.", "error");
     }
@@ -130,8 +145,12 @@ document.getElementById('form-password-fallback').addEventListener('submit', asy
     try {
         await signInWithEmailAndPassword(auth, emailGlobal, passwordInput);
         showStatus("¡Identidad confirmada! Ingresando...", "success");
-        setTimeout(() => { window.location.href = "app.html"; }, 1200);
+        setTimeout(() => { window.location.href = "https://task-done-951759405463.us-east1.run.app/"; }, 1200);
     } catch (error) {
-        showStatus("Contraseña incorrecta. Revisa tus datos.", "error");
+        if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+            showStatus("Contraseña incorrecta. Revisa tus datos.", "error");
+        } else {
+            showStatus("Error al iniciar sesión: " + error.message, "error");
+        }
     }
 });
