@@ -21,6 +21,8 @@ import {
     updateDoc 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+console.log("📦 Importaciones de Firebase completadas");
+
 // ═══════════════════════════════════════════════════════════════
 // CONFIGURACIÓN INICIAL
 // ═══════════════════════════════════════════════════════════════
@@ -35,14 +37,19 @@ const firebaseConfig = {
     measurementId: "G-70J2YVMJWW"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+let app, auth, db;
+
+try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    console.log("✅ Firebase inicializado correctamente");
+} catch (error) {
+    console.error("❌ Error inicializando Firebase:", error);
+}
 
 const WHATSAPP_VENEARCI_APP = "582383343563"; 
 const ADMIN_EMAIL = "venearcimultimedia@gmail.com";
-
-console.log("🔥 Firebase inicializado correctamente");
 
 // ═══════════════════════════════════════════════════════════════
 // CATÁLOGO DE PRECIOS
@@ -135,94 +142,155 @@ function ocultarTodo() {
     });
 }
 
+function ocultarSplash() {
+    console.log("🎬 Ocultando splash screen...");
+    const splash = getElementoSeguro('sec-splash');
+    if (splash) {
+        splash.style.transition = "opacity 0.4s ease";
+        splash.style.opacity = "0";
+        setTimeout(() => {
+            splash.classList.add('id-oculto');
+            console.log("✅ Splash screen oculto");
+        }, 400);
+    } else {
+        console.warn("⚠️ Elemento splash no encontrado");
+    }
+}
+
 // ═══════════════════════════════════════════════════════════════
 // INICIALIZACIÓN DEL DOCUMENTO
 // ═══════════════════════════════════════════════════════════════
 
 document.addEventListener("DOMContentLoaded", async () => {
-    console.log("🚀 Iniciando Venearci Services...");
+    console.log("🚀 DOMContentLoaded disparado - Iniciando Venearci Services...");
     
     try {
-        // Cargar especialistas desde la nube
-        await cargarEspecialistasDesdeNube();
-        console.log("✅ Especialistas cargados");
+        // Cargar especialistas desde la nube (sin bloquear)
+        cargarEspecialistasDesdeNube().catch(err => {
+            console.error("⚠️ Error cargando especialistas:", err.message);
+        });
 
-        // Ocultar splash screen después de 2 segundos
-        setTimeout(() => {
-            const splash = getElementoSeguro('sec-splash');
-            if (splash) {
-                splash.style.transition = "opacity 0.4s ease";
-                splash.style.opacity = "0";
-                setTimeout(() => splash.classList.add('id-oculto'), 400);
-            }
-        }, 2000);
-
-        // Registrar event listeners
+        // Registrar event listeners INMEDIATAMENTE
         registrarEventListeners();
         console.log("✅ Event listeners registrados");
+
+        // FUERZA la desaparición del splash después de 2 segundos
+        setTimeout(() => {
+            console.log("⏱️ 2 segundos - Ocultando splash...");
+            ocultarSplash();
+        }, 2000);
+
+        console.log("✅ Inicialización completada");
         
     } catch (error) {
-        console.error("❌ Error durante inicialización:", error);
+        console.error("❌ Error crítico durante inicialización:", error);
+        // Ocultar splash de todas formas
+        ocultarSplash();
     }
 });
 
 function registrarEventListeners() {
+    console.log("📋 Registrando event listeners...");
+
     // Botón Google
     const btnGoogle = getElementoSeguro('btn-login-google');
-    if (btnGoogle) btnGoogle.addEventListener('click', loginConGoogle);
+    if (btnGoogle) {
+        btnGoogle.addEventListener('click', loginConGoogle);
+        console.log("✅ Listener: Google Login");
+    }
 
     // Toggle autenticación
     const toggleAuth = getElementoSeguro('toggle-auth-mode');
-    if (toggleAuth) toggleAuth.addEventListener('click', alternarModoAutenticacion);
+    if (toggleAuth) {
+        toggleAuth.addEventListener('click', alternarModoAutenticacion);
+        console.log("✅ Listener: Toggle Auth");
+    }
 
     // Formulario autenticación tradicional
     const formAuth = getElementoSeguro('form-auth-tradicional');
-    if (formAuth) formAuth.addEventListener('submit', (e) => {
-        e.preventDefault();
-        procesarAuthTradicional();
-    });
+    if (formAuth) {
+        formAuth.addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log("📝 Enviando formulario de autenticación...");
+            procesarAuthTradicional();
+        });
+        console.log("✅ Listener: Form Auth");
+    }
 
     // Logout
     const btnLogout = getElementoSeguro('btn-logout');
-    if (btnLogout) btnLogout.addEventListener('click', () => signOut(auth));
+    if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+            console.log("🚪 Cerrando sesión...");
+            signOut(auth);
+        });
+        console.log("✅ Listener: Logout");
+    }
 
     // Modal teléfono
     const btnGuardarPhone = getElementoSeguro('btn-guardar-modal-phone');
-    if (btnGuardarPhone) btnGuardarPhone.addEventListener('click', guardarTelefonoModal);
+    if (btnGuardarPhone) {
+        btnGuardarPhone.addEventListener('click', guardarTelefonoModal);
+        console.log("✅ Listener: Guardar Teléfono");
+    }
 
     // Selección de categoría
     const selectCategoria = getElementoSeguro('select-categoria');
-    if (selectCategoria) selectCategoria.addEventListener('change', cambiarCategoriaRubro);
+    if (selectCategoria) {
+        selectCategoria.addEventListener('change', cambiarCategoriaRubro);
+        console.log("✅ Listener: Cambiar Categoría");
+    }
 
     // Selección de trabajo
     const selectTrabajo = getElementoSeguro('select-trabajo');
-    if (selectTrabajo) selectTrabajo.addEventListener('change', cambiarTrabajoEspecifico);
+    if (selectTrabajo) {
+        selectTrabajo.addEventListener('change', cambiarTrabajoEspecifico);
+        console.log("✅ Listener: Cambiar Trabajo");
+    }
 
     // Asignar técnico aleatorio
     const btnAsignarAleatorio = getElementoSeguro('btn-asignar-aleatorio');
-    if (btnAsignarAleatorio) btnAsignarAleatorio.addEventListener('click', asignarTecnicoAleatorio);
+    if (btnAsignarAleatorio) {
+        btnAsignarAleatorio.addEventListener('click', asignarTecnicoAleatorio);
+        console.log("✅ Listener: Asignar Aleatorio");
+    }
 
     // Cerrar modal factura
     const btnCerrarModal = getElementoSeguro('btn-cerrar-modal-factura');
-    if (btnCerrarModal) btnCerrarModal.addEventListener('click', cerrarModalFactura);
+    if (btnCerrarModal) {
+        btnCerrarModal.addEventListener('click', cerrarModalFactura);
+        console.log("✅ Listener: Cerrar Modal");
+    }
 
     // Confirmar servicio
     const btnConfirmar = getElementoSeguro('btn-confirmar-servicio');
-    if (btnConfirmar) btnConfirmar.addEventListener('click', despacharOrdenWhatsApp);
+    if (btnConfirmar) {
+        btnConfirmar.addEventListener('click', despacharOrdenWhatsApp);
+        console.log("✅ Listener: Confirmar Servicio");
+    }
 
     // Admin: Guardar empleado
     const btnAdmGuardar = getElementoSeguro('btn-adm-add-empleado');
-    if (btnAdmGuardar) btnAdmGuardar.addEventListener('click', adminRegistrarOGuardarEmpleado);
+    if (btnAdmGuardar) {
+        btnAdmGuardar.addEventListener('click', adminRegistrarOGuardarEmpleado);
+        console.log("✅ Listener: Admin Guardar");
+    }
 
     // Admin: Cancelar edición
     const btnAdmCancelar = getElementoSeguro('btn-adm-cancelar-edicion');
-    if (btnAdmCancelar) btnAdmCancelar.addEventListener('click', limpiarFormularioCEO);
+    if (btnAdmCancelar) {
+        btnAdmCancelar.addEventListener('click', limpiarFormularioCEO);
+        console.log("✅ Listener: Admin Cancelar");
+    }
 
     // Recuperación de contraseña
     const btnOlvide = getElementoSeguro('btn-olvide-contrasena');
-    if (btnOlvide) btnOlvide.addEventListener('click', manejarRecuperacionContrasena);
+    if (btnOlvide) {
+        btnOlvide.addEventListener('click', manejarRecuperacionContrasena);
+        console.log("✅ Listener: Recuperar Contraseña");
+    }
 
-    console.log("✅ Event listeners registrados correctamente");
+    console.log("✅ Todos los event listeners registrados");
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -231,6 +299,7 @@ function registrarEventListeners() {
 
 async function cargarEspecialistasDesdeNube() {
     try {
+        console.log("☁️ Cargando especialistas desde Firebase...");
         const querySnapshot = await getDocs(collection(db, "especialistas"));
         querySnapshot.forEach((docSnap) => {
             const data = docSnap.data();
@@ -252,80 +321,84 @@ async function cargarEspecialistasDesdeNube() {
 // MONITOREO DE AUTENTICACIÓN
 // ═══════════════════════════════════════════════════════════════
 
-onAuthStateChanged(auth, async (user) => {
-    console.log("👤 Auth state changed:", user ? user.email : "No user");
-    
-    ocultarTodo();
-    
-    const secAuth = getElementoSeguro('sec-auth');
-    if (secAuth) secAuth.classList.remove('id-oculto');
-    
-    if (user) {
-        usuarioActual = user;
-        const authFormsContainer = getElementoSeguro('auth-forms-container');
-        const userLoggedInfo = getElementoSeguro('user-logged-info');
-        const displayName = getElementoSeguro('user-display-name');
+if (auth) {
+    onAuthStateChanged(auth, async (user) => {
+        console.log("👤 Auth state changed:", user ? user.email : "No user");
         
-        if (authFormsContainer) authFormsContainer.classList.add('id-oculto');
-        if (userLoggedInfo) userLoggedInfo.classList.remove('id-oculto');
-        if (displayName) displayName.innerText = user.displayName || user.email;
-
-        // Verificar si es Admin
-        if (user.email === ADMIN_EMAIL) {
-            console.log("🔐 Usuario es ADMIN");
-            const badge = getElementoSeguro('user-badge-rol');
-            const panelAdmin = getElementoSeguro('panel-admin');
-            if (badge) badge.innerText = "CEO Admin";
-            if (panelAdmin) panelAdmin.classList.remove('id-oculto');
-            inicializarModuloAdmin();
-            return;
-        }
-
-        // Verificar si es Empleado
-        const esEmpleado = personalVenearci.find(emp => emp.correo.toLowerCase() === user.email.toLowerCase());
-        if (esEmpleado) {
-            console.log("👷 Usuario es EMPLEADO:", esEmpleado.nombre);
-            const badge = getElementoSeguro('user-badge-rol');
-            const panelEmpleado = getElementoSeguro('panel-empleado');
-            const foto = getElementoSeguro('emp-panel-foto');
-            const nombre = getElementoSeguro('emp-panel-nombre');
+        ocultarTodo();
+        
+        const secAuth = getElementoSeguro('sec-auth');
+        if (secAuth) secAuth.classList.remove('id-oculto');
+        
+        if (user) {
+            usuarioActual = user;
+            const authFormsContainer = getElementoSeguro('auth-forms-container');
+            const userLoggedInfo = getElementoSeguro('user-logged-info');
+            const displayName = getElementoSeguro('user-display-name');
             
-            if (badge) badge.innerText = "Especialista";
-            if (panelEmpleado) panelEmpleado.classList.remove('id-oculto');
-            if (foto) foto.src = esEmpleado.foto;
-            if (nombre) nombre.innerText = esEmpleado.nombre;
-            return;
-        }
+            if (authFormsContainer) authFormsContainer.classList.add('id-oculto');
+            if (userLoggedInfo) userLoggedInfo.classList.remove('id-oculto');
+            if (displayName) displayName.innerText = user.displayName || user.email;
 
-        // Es Cliente
-        console.log("👤 Usuario es CLIENTE");
-        const badge = getElementoSeguro('user-badge-rol');
-        if (badge) badge.innerText = "Cliente";
-        
-        try {
-            const userDoc = await getDoc(doc(db, "usuarios", user.uid));
-            if (userDoc.exists() && userDoc.data().telefono) {
-                telefonoUsuario = userDoc.data().telefono;
+            // Verificar si es Admin
+            if (user.email === ADMIN_EMAIL) {
+                console.log("🔐 Usuario es ADMIN");
+                const badge = getElementoSeguro('user-badge-rol');
+                const panelAdmin = getElementoSeguro('panel-admin');
+                if (badge) badge.innerText = "CEO Admin";
+                if (panelAdmin) panelAdmin.classList.remove('id-oculto');
+                inicializarModuloAdmin();
+                return;
+            }
+
+            // Verificar si es Empleado
+            const esEmpleado = personalVenearci.find(emp => emp.correo.toLowerCase() === user.email.toLowerCase());
+            if (esEmpleado) {
+                console.log("👷 Usuario es EMPLEADO:", esEmpleado.nombre);
+                const badge = getElementoSeguro('user-badge-rol');
+                const panelEmpleado = getElementoSeguro('panel-empleado');
+                const foto = getElementoSeguro('emp-panel-foto');
+                const nombre = getElementoSeguro('emp-panel-nombre');
+                
+                if (badge) badge.innerText = "Especialista";
+                if (panelEmpleado) panelEmpleado.classList.remove('id-oculto');
+                if (foto) foto.src = esEmpleado.foto;
+                if (nombre) nombre.innerText = esEmpleado.nombre;
+                return;
+            }
+
+            // Es Cliente
+            console.log("👤 Usuario es CLIENTE");
+            const badge = getElementoSeguro('user-badge-rol');
+            if (badge) badge.innerText = "Cliente";
+            
+            try {
+                const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+                if (userDoc.exists() && userDoc.data().telefono) {
+                    telefonoUsuario = userDoc.data().telefono;
+                    const secServicio = getElementoSeguro('sec-servicio');
+                    if (secServicio) secServicio.classList.remove('id-oculto');
+                } else {
+                    const modalPerfil = getElementoSeguro('modal-completar-perfil');
+                    if (modalPerfil) modalPerfil.classList.remove('id-oculto');
+                }
+            } catch(e) {
+                console.error("Error cargando documento de usuario:", e);
                 const secServicio = getElementoSeguro('sec-servicio');
                 if (secServicio) secServicio.classList.remove('id-oculto');
-            } else {
-                const modalPerfil = getElementoSeguro('modal-completar-perfil');
-                if (modalPerfil) modalPerfil.classList.remove('id-oculto');
             }
-        } catch(e) {
-            console.error("Error cargando documento de usuario:", e);
-            const secServicio = getElementoSeguro('sec-servicio');
-            if (secServicio) secServicio.classList.remove('id-oculto');
+        } else {
+            console.log("🚪 Usuario desconectado");
+            usuarioActual = null;
+            const authFormsContainer = getElementoSeguro('auth-forms-container');
+            const userLoggedInfo = getElementoSeguro('user-logged-info');
+            if (authFormsContainer) authFormsContainer.classList.remove('id-oculto');
+            if (userLoggedInfo) userLoggedInfo.classList.add('id-oculto');
         }
-    } else {
-        console.log("🚪 Usuario desconectado");
-        usuarioActual = null;
-        const authFormsContainer = getElementoSeguro('auth-forms-container');
-        const userLoggedInfo = getElementoSeguro('user-logged-info');
-        if (authFormsContainer) authFormsContainer.classList.remove('id-oculto');
-        if (userLoggedInfo) userLoggedInfo.classList.add('id-oculto');
-    }
-});
+    });
+} else {
+    console.error("❌ Auth no está disponible");
+}
 
 // ═══════════════════════════════════════════════════════════════
 // AUTENTICACIÓN - LOGIN
@@ -333,6 +406,7 @@ onAuthStateChanged(auth, async (user) => {
 
 async function loginConGoogle() {
     try { 
+        console.log("🔐 Iniciando Google Login...");
         await signInWithPopup(auth, new GoogleAuthProvider()); 
     } catch (e) { 
         console.error("Error Google Login:", e);
@@ -342,6 +416,7 @@ async function loginConGoogle() {
 
 function alternarModoAutenticacion() {
     isRegisterMode = !isRegisterMode;
+    console.log("🔄 Alternando modo autenticación:", isRegisterMode ? "REGISTRO" : "LOGIN");
     
     const titulo = getElementoSeguro('auth-title');
     const subtitulo = getElementoSeguro('auth-subtitle');
@@ -413,11 +488,13 @@ async function procesarAuthTradicional() {
                 return;
             }
 
+            console.log("📝 Registrando nuevo usuario...");
             const creds = await createUserWithEmailAndPassword(auth, email, password);
             await updateProfile(creds.user, { displayName: nombre });
             await setDoc(doc(db, "usuarios", creds.user.uid), { nombre, email, telefono: tlf });
             alert("¡Registro exitoso! Bienvenido a Venearci Services");
         } else {
+            console.log("🔐 Iniciando sesión...");
             await signInWithEmailAndPassword(auth, email, password);
         }
     } catch(err) {
@@ -438,7 +515,7 @@ async function guardarTelefonoModal() {
 
     try {
         telefonoUsuario = tlf;
-        if (auth.currentUser) {
+        if (auth && auth.currentUser) {
             await setDoc(doc(db, "usuarios", auth.currentUser.uid), { telefono: tlf }, { merge: true });
         }
         
@@ -595,7 +672,6 @@ function abrirYCalcularPresupuesto() {
         return;
     }
 
-    // Calcular total con IVA (16%)
     const precioBase = parseFloat(opt.dataset.precio) || 0;
     const total = (precioBase * 1.16).toFixed(2);
     
@@ -605,7 +681,6 @@ function abrirYCalcularPresupuesto() {
         precioBase: precioBase
     };
     
-    // Actualizar UI del presupuesto
     const ahora = new Date();
     const fechaHoraExacta = ahora.toLocaleDateString() + " - " + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
@@ -622,7 +697,6 @@ function abrirYCalcularPresupuesto() {
         if (elemento) elemento.innerText = valor;
     });
 
-    // Mostrar modal de factura
     const modalFactura = getElementoSeguro('modal-factura-flotante');
     if (modalFactura) modalFactura.classList.remove('id-oculto');
 
@@ -635,7 +709,6 @@ function cerrarModalFactura() {
 }
 
 async function despacharOrdenWhatsApp() {
-    // Validaciones
     if (!cotizacionFinal || !empleadoSeleccionado || !usuarioActual) {
         alert("Por favor completa todos los datos de la orden.");
         return;
@@ -650,28 +723,26 @@ async function despacharOrdenWhatsApp() {
     const timestampString = ahora.toLocaleDateString() + " " + ahora.toLocaleTimeString();
 
     try {
-        // Guardar orden en Firestore
-        await addDoc(collection(db, "ordenes"), {
-            cliente: usuarioActual.email,
-            clienteNombre: usuarioActual.displayName || usuarioActual.email,
-            especialista: empleadoSeleccionado.nombre,
-            tarea: cotizacionFinal.tarea,
-            precioBase: cotizacionFinal.precioBase,
-            totalConIVA: cotizacionFinal.total,
-            telefonoCliente: telefonoUsuario,
-            fecha: ahora.toISOString(),
-            estado: "pendiente"
-        });
+        if (db) {
+            await addDoc(collection(db, "ordenes"), {
+                cliente: usuarioActual.email,
+                clienteNombre: usuarioActual.displayName || usuarioActual.email,
+                especialista: empleadoSeleccionado.nombre,
+                tarea: cotizacionFinal.tarea,
+                precioBase: cotizacionFinal.precioBase,
+                totalConIVA: cotizacionFinal.total,
+                telefonoCliente: telefonoUsuario,
+                fecha: ahora.toISOString(),
+                estado: "pendiente"
+            });
+            console.log("✅ Orden guardada en Firestore");
+        }
 
-        console.log("✅ Orden guardada en Firestore");
+        const msg = `*ORDEN VENEARCI*\n• Fecha/Hora: ${timestampString}\n• Especialista: ${empleadoSeleccionado.nombre}\n• Tarea: ${cotizacionFinal.tarea}\n• Base: $${cotizacionFinal.precioBase}\n• Total con IVA (16%): $${cotizacionFinal.total}`;
 
-        // Preparar mensaje de WhatsApp
-        const msg = `*ORDEN VENEARCI*\n• Fecha/Hora: ${timestampString}\n• Especialista: ${empleadoSeleccionado.nombre}\n• Tarea: ${cotizacionFinal.tarea}\n• Base: $${cotizacionFinal.precioBase}\n• Total con IVA (16%): $${cotizacionFinal.total}\n• Cliente: ${usuarioActual.displayName || usuarioActual.email}\n• Teléfono: ${telefonoUsuario}`;
-
-        // Enviar a WhatsApp
         window.open(`https://wa.me/${WHATSAPP_VENEARCI_APP}?text=${encodeURIComponent(msg)}`, '_blank');
 
-        alert("✅ Orden enviada con éxito. Se abrirá WhatsApp para confirmar.");
+        alert("✅ Orden enviada con éxito");
         cerrarModalFactura();
 
     } catch (error) {
@@ -736,8 +807,6 @@ function cargarDatosEmpleadoEnFormulario(e) {
 
     const btnCancelar = getElementoSeguro('btn-adm-cancelar-edicion');
     if (btnCancelar) btnCancelar.classList.remove('id-oculto');
-
-    console.log("📝 Datos de empleado cargados para edición");
 }
 
 async function adminRegistrarOGuardarEmpleado() {
@@ -759,7 +828,6 @@ async function adminRegistrarOGuardarEmpleado() {
         valores[key] = elemento.value.trim();
     }
 
-    // Validaciones
     if (!valores.nombre) {
         alert("El nombre es obligatorio.");
         return;
@@ -796,11 +864,10 @@ async function adminRegistrarOGuardarEmpleado() {
         };
 
         if (idEmpleadoEditando) {
-            // ACTUALIZAR
-            const docRef = doc(db, "especialistas", idEmpleadoEditando);
-            
-            await setDoc(docRef, datosActualizados, { merge: true });
-            console.log("✅ Cambios guardados en Firestore");
+            if (db) {
+                const docRef = doc(db, "especialistas", idEmpleadoEditando);
+                await setDoc(docRef, datosActualizados, { merge: true });
+            }
 
             const index = personalVenearci.findIndex(p => p.uid === idEmpleadoEditando);
             if (index !== -1) {
@@ -809,7 +876,6 @@ async function adminRegistrarOGuardarEmpleado() {
             
             alert(`✅ Perfil de ${valores.nombre} actualizado con éxito`);
         } else {
-            // CREAR NUEVO
             const nuevoUid = `emp_${Date.now()}`;
             const nuevoTecnico = { 
                 uid: nuevoUid, 
@@ -817,8 +883,9 @@ async function adminRegistrarOGuardarEmpleado() {
                 disponible: true 
             };
             
-            await setDoc(doc(db, "especialistas", nuevoUid), nuevoTecnico);
-            console.log("✅ Nuevo especialista guardado en Firestore");
+            if (db) {
+                await setDoc(doc(db, "especialistas", nuevoUid), nuevoTecnico);
+            }
 
             personalVenearci.push(nuevoTecnico);
             alert(`✅ Especialista ${valores.nombre} registrado con éxito`);
@@ -850,8 +917,6 @@ function limpiarFormularioCEO() {
 
     const btnCancelar = getElementoSeguro('btn-adm-cancelar-edicion');
     if (btnCancelar) btnCancelar.classList.add('id-oculto');
-
-    console.log("🗑️ Formulario CEO limpiado");
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -868,7 +933,6 @@ function inicializarEditorTarifasCEO() {
         return;
     }
 
-    // Llenar selector con catálogo
     selectTrabajoCEO.innerHTML = '<option value="">-- Elige el Trabajo a Modificar --</option>';
     Object.keys(catalogoPrecios).forEach(rubro => {
         catalogoPrecios[rubro].forEach(t => {
@@ -880,11 +944,9 @@ function inicializarEditorTarifasCEO() {
         });
     });
 
-    // Listener para mostrar precio actual
     selectTrabajoCEO.removeEventListener('change', mostrarPrecioActual);
     selectTrabajoCEO.addEventListener('change', mostrarPrecioActual);
 
-    // Listener para actualizar precio
     if (btnActualizar) {
         btnActualizar.removeEventListener('click', actualizarPrecioTarea);
         btnActualizar.addEventListener('click', actualizarPrecioTarea);
@@ -937,13 +999,14 @@ async function actualizarPrecioTarea(e) {
                 catalogoPrecios[rubro][index].precio = nuevoPrecio;
                 encontrado = true;
                 
-                // Guardar en Firestore
-                await setDoc(doc(db, "configuracion_tarifas", laborSel), {
-                    labor: laborSel,
-                    precio: nuevoPrecio,
-                    rubro: rubro,
-                    ultimaActualizacion: new Date().toISOString()
-                }, { merge: true });
+                if (db) {
+                    await setDoc(doc(db, "configuracion_tarifas", laborSel), {
+                        labor: laborSel,
+                        precio: nuevoPrecio,
+                        rubro: rubro,
+                        ultimaActualizacion: new Date().toISOString()
+                    }, { merge: true });
+                }
                 
                 console.log(`✅ Tarifa "${laborSel}" actualizada a $${nuevoPrecio}`);
                 alert(`✅ Tarifa de "${laborSel}" actualizada a $${nuevoPrecio} (con IVA será $${(nuevoPrecio * 1.16).toFixed(2)})`);
@@ -960,4 +1023,4 @@ async function actualizarPrecioTarea(e) {
     }
 }
 
-console.log("✅ Script de Venearci Services cargado correctamente");
+console.log("✅ Script de Venearci Services COMPLETAMENTE CARGADO Y LISTO");
