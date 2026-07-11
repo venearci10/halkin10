@@ -1,1 +1,26 @@
+  <main class="main-frame">
+    <div class="centerfull">
+      <h1 class="title">DirecTV Sports</h1>
+    </div>
+
+    <div class="subiframe">
+      <div class="preframe">
+        <iframe allowfullscreen="true" 
+                scrolling="no" 
+                src="https://latamvidz1.com/canal.php?stream=dsports"
+                allow="encrypted-media" 
+                width="100%" 
+                height="100%" 
+                frameborder="0" 
+                id="embedIframe"
+                loading="lazy">
+        </iframe>
+      </div>
+      <div class="centerfull">
+        <button id="btnIframe">
+          Recargar canal
+        </button>
+      </div>
+    </div>
+
 
