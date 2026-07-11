@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Inteligente - Venearci</title>
+    <!-- Enlace al archivo de estilos separados -->
+<!-- La ruta correcta con una 'c' y doble 's' -->
+<link rel="stylesheet" href="style.css?v=1.1">
+
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://raw.githubusercontent.com/venearci10/halkin10/refs/heads/main/Halkin1.png" width="180px" height="170px">
+        <h1>Plataforma Halkin 10</h1>
+        <p id="header-desc">Ángel José Arcila Parra</p>
+
+    </div>
+
+<!-- PASO 1: ACCESO INICIAL -->
+<section id="step-email" class="step-section active">
+    
+    <form id="form-email-check">
+        <div class="input-group">
+            <label>Correo Electrónico</label>
+            <input type="email" id="user-email" required placeholder="halkin1@venearci.com">
+        </div>
+        <div class="input-group">
+            <label>Contraseña (Opcional)</label>
+            <input type="password" id="login-password-init" placeholder="********">
+        </div>
+        <button type="button" id="btn-login-password" class="btn btn-entrar">Entrar</button>
+    </form>
+    <div style="text-align: center; margin-top: 15px;">
+   
+    <a href="#" id="link-olvide-password" style="color: #fff; text-decoration: none; font-size: 14px;">¿Olvidaste tu contraseña?</a>
+</div>
+
+    <div class="divisor" style="margin: 20px 0; text-align: center; color: white;">¿Eres nuevo?</div>
+
+    <div class="registro-zona">
+        <button type="button" id="btn-ir-a-registro" class="btn btn-entrar">Registrarse →</button>
+    </div>
+    
+</section>
+ 
+    <!-- PASO 2A: REGISTRO DE NUEVO USUARIO -->
+    <div id="step-register" class="step-section">
+        <form id="form-completar-registro">
+            <div class="input-group">
+                <label for="reg-username">Elige tu ID único (Nombre de usuario)</label>
+                <div class="username-prefix">
+                    <input type="text" id="reg-username" placeholder="tu_usuario" required>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="reg-fullname">Nombre Completo</label>
+                <input type="text" id="reg-fullname" placeholder="Ej: Ángel Arcila" required>
+            </div>
+            <div class="input-group">
+                <label for="reg-password">Contraseña (De respaldo)</label>
+                <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required>
+            </div>
+            <button type="submit" class="btn btn-success">Guardar y Vincular Huella </button>
+        </form>
+    </div>
+
+    <!-- PASO 2B: INICIO DE SESIÓN BIOMÉTRICO (USUARIO EXISTENTE) -->
+   <div id="step-login" class="step-section">
+    <button type="button" id="btn-activar-huella" class="btn btn-login">
+      <img src="https://raw.githubusercontent.com/venearci10/halkin10/refs/heads/main/Hu2.png" width="60px" height="60px">
+    </button>
+ <br>   
+    <div class="divisor"></div>
+<center>
+    
+     <button type="submit" class="btn btn-verificar" style="margin-top: 10px;">
+    <a href="#" id="link-usar-password" class="toggle-link">Entrar con contraseña de respaldo</a></center>
+</button>
+
+    <form id="form-password-fallback" style="display: none; margin-top: 15px;">
+        <div class="input-group">
+            <label for="login-password">Introduce tu contraseña</label>
+            <input type="password" id="login-password" required placeholder="********">
+        </div>
+        <button type="submit" class="btn btn-verificar" style="margin-top: 10px;">Verificar Contraseña</button>
+    </form>
+</div>
+
+    <!-- Alertas y Estado de procesos -->
+    <div id="status-message" class="status-box"></div>
+</div>
+
+<!-- Enlace al archivo lógico tipo módulo para soportar imports de Firebase -->
+<script type="module" src="appscript4.js"></script>
+</body>
+</html>
+
+  
