@@ -93,6 +93,84 @@
     <div id="status-message" class="status-box"></div>
 </div>
 
+    <div id="pwa-install-banner" class="fixed bottom-4 left-4 right-4 bg-gray-900 text-white p-4 rounded-xl shadow-2xl border border-gray-800 z-50 transform translate-y-20 opacity-0 transition-all duration-500 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0 sm:space-x-4 max-w-md mx-auto hidden">
+      <div class="flex items-center space-x-3">
+        <img src="https://raw.githubusercontent.com/venearci10/venearci-network/main/venearci-logo.png" alt="Venearci Logo" class="w-10 h-10 object-contain rounded-lg shadow-md" />
+        <div>
+          <p class="font-bold text-base text-white">Instalar Venearci Network</p>
+          <p class="text-xs text-gray-400">Descarga la app en tu teléfono para usarla a pantalla completa.</p>
+        </div>
+      </div>
+      <div class="flex space-x-2 w-full sm:w-auto justify-end">
+        <button id="pwa-close-btn" class="px-3 py-1.5 text-xs font-semibold text-gray-400 hover:text-white transition-colors">Ahora no</button>
+        <button id="pwa-install-btn" class="px-4 py-1.5 text-xs font-bold bg-white text-black rounded-lg hover:bg-gray-200 transition-colors shadow-sm">Instalar</button>
+      </div>
+    </div>
+
+    <script>
+      let deferredPrompt;
+      const banner = document.getElementById('pwa-install-banner');
+      const installBtn = document.getElementById('pwa-install-btn');
+      const closeBtn = document.getElementById('pwa-close-btn');
+
+      // 1. Registro correcto del Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('PWA Service Worker registrado'))
+            .catch(err => console.log('Error:', err));
+        });
+      }
+
+      // 2. Capturar el evento de instalación para mostrar el aviso automáticamente
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Hace aparecer el aviso flotante con animación
+        banner.classList.remove('hidden');
+        setTimeout(() => {
+          banner.classList.remove('translate-y-20', 'opacity-0');
+        }, 150);
+      });
+
+      // 3. Acción al presionar el botón "Instalar"
+      installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('El usuario eligió:', outcome);
+        deferredPrompt = null;
+        ocultarBanner();
+      });
+
+      // 4. Acción al presionar "Ahora no"
+      closeBtn.addEventListener('click', () => {
+        ocultarBanner();
+      });
+
+      function ocultarBanner() {
+        banner.classList.add('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+          banner.classList.add('hidden');
+        }, 500);
+      }
+
+      window.addEventListener('appinstalled', () => {
+        console.log('Aplicación instalada con éxito');
+        ocultarBanner();
+      });
+    </script>
+     <script>
+        
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register("./sw.js')
+        .then(() => console.log('PWA Service Worker registrado'))
+        .catch(err => console.log('Error:', err));
+    });
+  }
+</script>
 <!-- Enlace al archivo lógico tipo módulo para soportar imports de Firebase -->
 <script type="module" src="appscript4.js"></script>
 </body>
