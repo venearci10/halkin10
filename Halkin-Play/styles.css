@@ -1,6 +1,6 @@
 :root { 
 --accent: #ffbd15; 
---bg: #1a1a1a; 
+--bg: #ffbd15; 
 --surface: #141414; 
 }
 
@@ -14,9 +14,9 @@
 
 #videoContainer {
     width: 100%;
-    padding: 10px;
+    padding: 0px;
     box-sizing: border-box;
-    background: #000;
+    background: #642119;
 }
 
 .hidden { display: none !important; }
@@ -97,12 +97,12 @@ display: grid;
 grid-template-columns: repeat(auto-fill, minmax(40%, 1fr));
 gap: 20px; 
  padding: 20px; 
-background: #1a1a1a;
+background: #ffbd15;
 
  }
 
 .video-card { 
-background: var(--surface); 
+background: #642119; 
 border-radius: 16px; 
 padding: 12px;
  border: 1px solid #222; 
@@ -114,6 +114,7 @@ transition: 0.3s;
 transform: scale(1.03); 
 background: #fff;
 width: 100%;
+
  }
 
 .video-card img { 
@@ -155,4 +156,3 @@ border: 1px solid #fff;
 color: white; 
 cursor: pointer; 
 border-radius: 4px; }
-  
