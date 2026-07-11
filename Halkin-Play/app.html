@@ -1,1 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VENEARCI | Prime Streaming</title>
+    <link rel="stylesheet" href="app10.css">
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="authOverlay" class="overlay">
+        <div class="auth-box">
+            <div class="logo"><img src="https://raw.githubusercontent.com/venearci10/halkin10/refs/heads/main/Halkin1.png" class="login-logo"></div>
+            <div id="loginForm">
+                <input type="email" id="email" placeholder="Email">
+                <input type="password" id="password" placeholder="Contraseña">
+                <button id="loginBtn">Iniciar Sesión</button>
+                <p>¿No tienes cuenta? <a href="#" id="showRegister">Regístrate aquí</a></p>
+            </div>
+            <div id="registerForm" style="display: none;">
+                <input type="email" id="regEmail" placeholder="Email">
+                <input type="password" id="regPassword" placeholder="Contraseña">
+                <button id="registerBtn">Crear Cuenta</button>
+                <p>¿Ya tienes cuenta? <a href="#" id="showLogin">Inicia sesión</a></p>
+            </div>
+         <button id="googleBtn" class="google-btn">
+ <img src="https://www.google.com/favicon.ico" alt="Google" width="18" style="margin-right: 8px; vertical-align: middle;">            
+             Continuar con Google</button>
+        </div>
+    </div>
 
+    <header class="navbar">
+        <div class="nav-logo hidden" id="navLogo"><img src="https://raw.githubusercontent.com/venearci10/halkin10/refs/heads/main/Halkin1.png" width="140px" height="120px"></div>
+        <div class="user-info">
+            <span id="userEmailDisplay" class="username-text"></span>
+            <button id="logoutBtn" class="btn-logout hidden">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="videoContainer" class="hidden">
+<video id="venearci-player" 
+class="video-js vjs-big-play-centered" 
+poster="https://raw.githubusercontent.com/venearci10/halkin10/refs/heads/main/Halkin1.png"
+controls
+
+></video>
+        </div>
+        <section id="contentGrid"></section>
+    </main>
+<script>
+ <div id="pwa-install-banner" class="fixed bottom-4 left-4 right-4 bg-gray-900 text-white p-4 rounded-xl shadow-2xl border border-gray-800 z-50 transform translate-y-20 opacity-0 transition-all duration-500 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0 sm:space-x-4 max-w-md mx-auto hidden">
+      <div class="flex items-center space-x-3">
+        <img src="https://raw.githubusercontent.com/venearci10/venearci-network/main/venearci-logo.png" alt="Venearci Logo" class="w-10 h-10 object-contain rounded-lg shadow-md" />
+        <div>
+          <p class="font-bold text-base text-white">Instalar Venearci Network</p>
+          <p class="text-xs text-gray-400">Descarga la app en tu teléfono para usarla a pantalla completa.</p>
+        </div>
+      </div>
+      <div class="flex space-x-2 w-full sm:w-auto justify-end">
+        <button id="pwa-close-btn" class="px-3 py-1.5 text-xs font-semibold text-gray-400 hover:text-white transition-colors">Ahora no</button>
+        <button id="pwa-install-btn" class="px-4 py-1.5 text-xs font-bold bg-white text-black rounded-lg hover:bg-gray-200 transition-colors shadow-sm">Instalar</button>
+      </div>
+    </div>
+
+    <script>
+      let deferredPrompt;
+      const banner = document.getElementById('pwa-install-banner');
+      const installBtn = document.getElementById('pwa-install-btn');
+      const closeBtn = document.getElementById('pwa-close-btn');
+
+      // 1. Registro correcto del Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('PWA Service Worker registrado'))
+            .catch(err => console.log('Error:', err));
+        });
+      }
+
+      // 2. Capturar el evento de instalación para mostrar el aviso automáticamente
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Hace aparecer el aviso flotante con animación
+        banner.classList.remove('hidden');
+        setTimeout(() => {
+          banner.classList.remove('translate-y-20', 'opacity-0');
+        }, 150);
+      });
+
+      // 3. Acción al presionar el botón "Instalar"
+      installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('El usuario eligió:', outcome);
+        deferredPrompt = null;
+        ocultarBanner();
+      });
+
+      // 4. Acción al presionar "Ahora no"
+      closeBtn.addEventListener('click', () => {
+        ocultarBanner();
+      });
+
+      function ocultarBanner() {
+        banner.classList.add('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+          banner.classList.add('hidden');
+        }, 500);
+      }
+
+      window.addEventListener('appinstalled', () => {
+        console.log('Aplicación instalada con éxito');
+        ocultarBanner();
+      });
+    </script>
+     <script>
+        
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register("./sw.js')
+        .then(() => console.log('PWA Service Worker registrado'))
+        .catch(err => console.log('Error:', err));
+    });
+  }
+</script>
+
+ 
+  
+    <script type="module" src="app.js"></script>
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+</body>
+              </html>
+  
