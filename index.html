@@ -106,10 +106,62 @@
         <button id="pwa-install-btn" class="px-4 py-1.5 text-xs font-bold bg-white text-black rounded-lg hover:bg-gray-200 transition-colors shadow-sm">Instalar</button>
       </div>
     </div>
+ <script>
+      let deferredPrompt;
+      const banner = document.getElementById('pwa-install-banner');
+      const installBtn = document.getElementById('pwa-install-btn');
+      const closeBtn = document.getElementById('pwa-close-btn');
 
-     <script>
+      // 1. Registro correcto del Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('PWA Service Worker registrado'))
+            .catch(err => console.log('Error:', err));
+        });
+      }
+
+      // 2. Capturar el evento de instalación para mostrar el aviso automáticamente
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
         
-  if ('serviceWorker' in navigator) {
+        // Hace aparecer el aviso flotante con animación
+        banner.classList.remove('hidden');
+        setTimeout(() => {
+          banner.classList.remove('translate-y-20', 'opacity-0');
+        }, 150);
+      });
+
+      // 3. Acción al presionar el botón "Instalar"
+      installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('El usuario eligió:', outcome);
+        deferredPrompt = null;
+        ocultarBanner();
+      });
+
+      // 4. Acción al presionar "Ahora no"
+      closeBtn.addEventListener('click', () => {
+        ocultarBanner();
+      });
+
+      function ocultarBanner() {
+        banner.classList.add('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+          banner.classList.add('hidden');
+        }, 500);
+      }
+
+      window.addEventListener('appinstalled', () => {
+        console.log('Aplicación instalada con éxito');
+        ocultarBanner();
+      });
+    </script>
+   
+    <script>
     window.addEventListener('load', () => {
       navigator.serviceWorker.register("./sw.js')
         .then(() => console.log('PWA Service Worker registrado'))
