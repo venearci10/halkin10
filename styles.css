@@ -1,1 +1,259 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
+body {
+    background-image: url(https://raw.githubusercontent.com/venearci10/halkin10/refs/heads/main/s7.jpg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    background-image: url(https://raw.githubusercontent.com/venearci10/halkin10/refs/heads/main/s3.jpg);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 420px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.header p {
+    color: #642119;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.step-section {
+    display: none;
+}
+
+.step-section.active {
+    display: block;
+}
+
+.step.section.login {
+    display: block;
+}
+
+.input-group {
+    margin-bottom: 18px;
+    position: relative;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #007bff;
+}
+
+.username-prefix {
+    position: relative;
+}
+
+.username-prefix input {
+    padding-left: 30px;
+}
+
+.username-prefix::before {
+    content: "@";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-primary {
+    background-color: #ffbd15;
+    color: #642119;
+    width: 100%;
+    height: 12px;    
+}
+
+.btn-primary:hover {
+    background-color: #896000;
+}
+
+.btn-success {
+    background-color: #ffbd15;
+    color: #642119;
+    width: 100%;
+    height: 12px;
+    }
+
+.btn-success:hover {
+    background-color: #896000;
+}
+
+.btn-login {
+    background-color: transparent;
+    color: #642119;
+    width: 100%;
+    height: 12px;
+}
+
+.btn-login: hover {
+    background-color: #896000;
+    
+}
+
+.btn-verificar {
+    background-color: #ffbd15;
+    color: #642119;
+    width: 100%;
+    height: 12px;    
+}
+
+.btn-verificar: hover {
+    background-color: #896000;
+       
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-secondary {
+    background-color: #642119;
+    color: white;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.btn-entrar {
+    background-color: #ffbd15;
+    color: #642119;
+    width: 100%;
+    height: 12px;
+}
+
+/* --- CONFIGURACIÓN GENERAL DEL STATUS BOX --- */
+.status-box {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-radius: 12px; /* Bordes un poco más redondeados y modernos */
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    display: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Sombra suave para dar profundidad */
+    
+    /* Animación de entrada fluida con rebote elástico */
+    animation: slideInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    backface-visibility: hidden;
+}
+
+/* --- ESTILO MODERNO PARA INFO (PROCESANDO / CARGANDO) --- */
+.status-box.info { 
+    display: block; 
+    background: linear-gradient(90deg, #642119, #ffbd15); /* Degradado azul profundo premium */
+    color: #ffffff; 
+    border-left: 5px solid #00c6ff; /* Línea brillante de acento */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto láser de brillo en movimiento para simular carga inteligente */
+.status-box.info::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: loadingShine 1.5s infinite linear;
+}
+
+/* --- ESTILO MODERNO PARA SUCCESS (ÉXITO) --- */
+.status-box.success { 
+    display: block; 
+    background-color: #ffbd15; rgba(46, 204, 113, 0.15); /* Fondo verde translúcido */
+    color: #642119; 
+    border: 1px solid rgba(46, 204, 113, 0.4);
+}
+
+/* --- ESTILO MODERNO PARA ERROR (FALLOS) --- */
+.status-box.error { 
+    display: block; 
+    background-color:  #642119; rgba(231, 76, 60, 0.15); /* Fondo rojo translúcido elegante */
+    color: #ffbd15; 
+    border: 1px solid rgba(231, 76, 60, 0.4);
+}
+
+/* --- PLAN DE ANIMACIONES --- */
+@keyframes slideInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.96);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes loadingShine {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+  
