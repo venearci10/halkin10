@@ -1,0 +1,158 @@
+:root { 
+--accent: #ffbd15; 
+--bg: #1a1a1a; 
+--surface: #141414; 
+}
+
+
+/* Asegura que el reproductor sea adaptable */
+.video-js {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+}
+
+#videoContainer {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background: #000;
+}
+
+.hidden { display: none !important; }
+
+body { 
+background: var(--bg); 
+color: #fff;
+font-family: 'Segoe UI', sans-serif; 
+margin: 0; }
+
+/* Navbar */
+.navbar { 
+display: flex; 
+justify-content: space-between; 
+align-items: center; 
+padding: 15px 25px; 
+background: rgba(10,10,10,0.95); 
+border-bottom: 1px solid #1a1a1a; 
+background: #ffbd15;
+height: 100px;
+
+}
+
+.username-text { 
+font-size: 0.9rem; 
+font-weight: 600px; 
+color: #fff; 
+margin-right: 75px; }
+
+.username-img {
+    border-radius: 50%;
+    width: 60px;
+}
+
+.btn-logout { 
+background: #642119;
+border: 1px solid #ff444; 
+color: #fff; 
+padding: 6px 14px; 
+border-radius: 20px;
+font-size: 0.8rem; 
+cursor: pointer;
+transition: 0.3s; }
+
+.btn-logout:hover {
+background: #e50914; 
+color: white; 
+border-color: #e50914; }
+
+/* Login */
+.overlay { 
+position: fixed; 
+inset: 0; 
+background: var(--bg); 
+display: flex; 
+justify-content: center; 
+align-items: center;
+ z-index: 1000; }
+ 
+.auth-box { 
+background: var(--surface);
+ padding: 30px; 
+ border-radius: 16px;
+ width: 90%; 
+ max-width: 350px; 
+ text-align: center; }
+  
+.login-logo { 
+max-width: 150px;
+ border-radius: 50%; 
+ border: 2px solid var(--accent); 
+ margin-bottom: 20px; 
+ }
+
+/* Grid */
+#contentGrid { 
+display: grid; 
+grid-template-columns: repeat(auto-fill, minmax(40%, 1fr));
+gap: 20px; 
+ padding: 20px; 
+background: #1a1a1a;
+
+ }
+
+.video-card { 
+background: var(--surface); 
+border-radius: 16px; 
+padding: 12px;
+ border: 1px solid #222; 
+cursor: pointer;
+transition: 0.3s;
+ }
+
+.video-card:hover { 
+transform: scale(1.03); 
+background: #fff;
+width: 100%;
+ }
+
+.video-card img { 
+width: 100%;
+border-radius: 12px; }
+
+.video-card h3 { 
+font-size: 0.9rem;
+margin: 10px 0 0 0; }
+
+.hidden { display: none !important; }
+
+
+.auth-box { 
+background: #ffbd15; 
+padding: 30px; 
+border-radius: 12px; 
+width: 80%; 
+max-width: 320px; 
+margin: 50px auto; 
+text-align: center;
+border: 2px solid #fff;
+
+ }
+
+input { 
+width: 100%; 
+padding: 10px; 
+margin: 10px 0; 
+border-radius: 4px;
+border: none; 
+box-sizing: border-box; }
+
+button { 
+width: 100%;
+padding: 10px;
+background: #642119; 
+border: 1px solid #fff; 
+color: white; 
+cursor: pointer; 
+border-radius: 4px; }
+  
