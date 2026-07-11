@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.venearci.network" version="1.0.0" xmlns="http://www.w3.org/ns/widgets">
+    <name>Venearci Network</name>
+    <description>Plataforma de Control y Balanceo de Red</description>
+    <author email="contacto@venearci.com">Ángel José Arcila Parra</author>
+    
+    <content src="index.html" />
+    
+    <access origin="*" />
+    <preference name="Orientation" value="portrait" />
+    
+    <icon src="https://raw.githubusercontent.com/venearci10/venearci-network/refs/heads/main/venearci-logo.png" />
+</widget>
