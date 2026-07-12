@@ -1,6 +1,6 @@
 {
-  "name": "halkin10",
-  "short_name": "Halkin 10",
+  "name": "halkin-Play",
+  "short_name": "Halkin-Play 10",
   "start_url": "app.html",
   "display": "standalone",
   "background_color": "#ffbd15",
