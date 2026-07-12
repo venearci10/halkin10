@@ -27,14 +27,14 @@ body {
 }
 
 .username-text { 
-    font-size: 0.9rem; 
-    font-weight: 200; 
+    font-size: 0.5rem; 
+    font-weight: 400; 
     color: #fff; 
-    margin-right: 10px; 
+    margin-right: 5px; 
 }
 
 .username-img {
-    border-radius: 50%;
+    border-radius: 10%;
     width: 60px;
     background:#fff;
 }
@@ -42,6 +42,7 @@ body {
 .user-info {
     display: flex;
     align-items: center;
+    width-max: 10%;
 }
 
 .btn-logout { 
@@ -57,7 +58,7 @@ body {
 
 .btn-logout:hover {
     background: #e50914; 
-    color: white; 
+    color: #ff4444; 
     border-color: #e50914; 
 }
 
@@ -162,4 +163,3 @@ button {
 .hidden { 
     display: none !important; 
 }
-
