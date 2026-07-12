@@ -11,47 +11,45 @@ body {
     font-family: 'Segoe UI', sans-serif; 
     margin: 0; 
     width: 100%; 
-    overflow-x: hidden; /* Evita scroll horizontal innecesario */
+    overflow-x: hidden;
 }
 
-/* Navbar: Ajustado al 100% para evitar el vacío a la derecha */
+/* Navbar: Ajustado a altura automática para acomodar la columna de usuario */
 .navbar { 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    padding: 15px 25px; 
+    padding: 10px 20px; 
     background-image: url(https://raw.githubusercontent.com/venearci10/halkin10/refs/heads/main/s3.jpg);
-    height: 155px;
+    min-height: 155px;
     width: 100%; 
     box-sizing: border-box;
 }
 
-.username-text { 
-    font-size: 0.5rem; 
-    font-weight: 400; 
-    color: #fff; 
-    margin-right: 5px; 
-}
-
-.username-img {
-    border-radius: 10%;
-    width: 60px;
-    background:#fff;
-}
-
+/* Contenedor de usuario: Ahora es una columna centrada */
 .user-info {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    width-max: 10%;
+    gap: 5px;
+    margin-right: 20px;
+    margin-top: 5px;
+}
+
+.username-text { 
+    font-size: 0.8rem; 
+    font-weight: 600; 
+    color: #fff; 
+    margin-right: 0; 
 }
 
 .btn-logout { 
     background: #642119;
-    border: 3px solid #ffbd15; 
+    border: 2px solid #ffbd15; 
     color: #fff; 
-    padding: 6px 7px; 
+    padding: 4px 12px; 
     border-radius: 20px;
-    font-size: 0.8rem; 
+    font-size: 0.7rem; 
     cursor: pointer;
     transition: 0.3s; 
 }
@@ -62,7 +60,7 @@ body {
     border-color: #e50914; 
 }
 
-/* Grid: Ajustado para llenar el espacio */
+/* Grid */
 #contentGrid { 
     display: grid; 
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
