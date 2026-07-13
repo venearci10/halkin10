@@ -1,10 +1,10 @@
 {
-  "name": "halkin10",
-  "short_name": "Halkin 10",
+  "name": "halkin-Play",
+  "short_name": "Halkin Play",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffbd15",
-  "theme_color": "#000000",
+  "theme_color": "#ffbd15",
   "icons": [
     {
       "src": "https://raw.githubusercontent.com/venearci10/halkin10/refs/heads/main/Halkin1.png",
