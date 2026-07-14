@@ -69,6 +69,8 @@ body {
     background: #ffbd15;
     width: 100%;
     box-sizing: border-box;
+    max-height: 225px;
+    overflow-y: auto;
 }
 
 .video-card { 
