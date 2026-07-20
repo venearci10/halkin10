@@ -280,11 +280,20 @@ function getOrCreatePlayer() {
 // 📺 REPRODUCCIÓN Y COMERCIALES
 // ==========================================
 
+// 🛡️ SOLUCIÓN PARA BLOQUEOS DE CORS Y HTTPS EN GITHUB PAGES
 function formatStreamUrl(rawUrl) {
     if (!rawUrl) return '';
-    if (window.location.protocol === 'https:' && rawUrl.startsWith('http://')) {
+
+    // Evitar duplicación si la URL ya contiene el proxy
+    if (rawUrl.includes('corsproxy.io')) {
+        return rawUrl;
+    }
+
+    // Usar proxy si es transmisión HTTP insegura o si la app corre en GitHub Pages
+    if (rawUrl.startsWith('http://') || window.location.hostname.includes('github.io')) {
         return `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
     }
+
     return rawUrl;
 }
 
