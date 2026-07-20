@@ -163,16 +163,247 @@ button {
 .hidden { 
     display: none !important; 
 }
- footer {
+  footer {
       background-color: #ffbd15;
       color: #fff;
       text-align: center;
       padding: 1rem;
       margin-top: 1rem;
-      height: 20px;
+      height:0px;
     }
     .logofooter {
       width: 20px;
       margin-bottom: 0.5rem;
     }
     
+  /* ==========================================
+   🎬 ESTILO VIDEO PARA VIDEO.JS
+   ========================================== */
+
+.video-js {
+    font-family: 'Amazon Ember', Arial, sans-serif !important;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Barra de control flotante sobre el video */
+.video-js .vjs-control-bar {
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.85) 100%) !important;
+    height: 4.5em !important;
+    padding-bottom: 0.5em;
+    display: flex;
+    align-items: center;
+}
+
+/* Iconos y Botones de la barra */
+.video-js .vjs-button > .vjs-icon-placeholder:before {
+    font-size: 1.8em !important;
+    line-height: 2.2 !important;
+    color: #ffbd15;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.video-js .vjs-button:hover > .vjs-icon-placeholder:before {
+    color: #642119; /*  */
+    transform: scale(1.1);
+}
+
+/* Barra de Progreso (Sombra + Color Azu) */
+.video-js .vjs-play-progress {
+    background-color: #ffbd15 !important;
+}
+
+.video-js .vjs-slider {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    height: 0.4em !important;
+    border-radius: 2px;
+}
+
+.video-js .vjs-load-progress {
+    background: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Menús flotantes (Selector de Calidad y Velocidad) */
+.video-js .vjs-menu-button-popup .vjs-menu .vjs-menu-content {
+    background-color: rgba(15, 23, 30, 0.95) !important; /* Fondo  */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0px;
+    padding: 8px;
+}
+
+.video-js .vjs-menu-item {
+    color: #ffbd15;
+    font-size: 1.1em;
+    border-radius: 4px;
+    margin: 2px 0;
+}
+
+.video-js .vjs-menu-item.vjs-selected, 
+.video-js .vjs-menu-item:hover {
+    background-color: #642119 !important;
+    color: #ffbd15 !important;
+    font-weight: bold;
+}
+
+
+
+/* Panel de Telemetría e Información del Jugador */
+.player-info-panel {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 18px;
+    background-color: #0f171e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+.player-info-panel h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    color: #ffbd15;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+}
+
+.stat-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-info strong {
+    display: block;
+    font-size: 0.9rem;
+    color: #642119;
+}
+
+.stat-info p {
+    margin: 2px 0 0 0;
+    font-size: 0.75rem;
+    color: #ffbd15;
+}
+
+.badge {
+    background-color: #1b2530;
+    color: #00a8e1;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    border: 1px solid rgba(0, 168, 225, 0.3);
+    white-space: nowrap;
+}
+
+
+/* Barra de control inferior tipo Prime / YouTube Web */
+.video-js .vjs-control-bar {
+    background: rgba(15, 23, 30, 0.9) !important;
+    height: 4em !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Icono del botón de Ajustes integrado en la barra */
+.vjs-yt-settings-menu .vjs-icon-placeholder:before {
+    content: "\f110"; /* Icono de engranaje de Video.js */
+    font-family: VideoJS;
+    font-size: 1.8em;
+    line-height: 2em;
+}
+
+/* Menú contextual desplegable sobre el botón de la barra */
+.vjs-yt-settings-menu .vjs-menu-content {
+    background: rgba(28, 38, 48, 0.95) !important;
+    border-radius: 8px !important;
+    padding: 6px 0 !important;
+    bottom: 4.5em !important; /* Aparece justo encima de la barra */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.vjs-yt-settings-menu .vjs-menu-item {
+    font-family: Arial, sans-serif !important;
+    font-size: 0.9em !important;
+    padding: 8px 16px !important;
+    color: #ffbd15 !important;
+    text-align: left !important;
+}
+
+.vjs-yt-settings-menu .vjs-menu-item:hover,
+.vjs-yt-settings-menu .vjs-menu-item:focus {
+    background-color: #00a8e1 !important; /*  */
+    color: #642119 !important;
+}
+
+/* Botón de velocidad (1x) integrado directo en la barra */
+.vjs-speed-button {
+    cursor: pointer;
+    font-weight: bold;
+    color: #ffbd15;
+    font-size: 1.1em;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+}
+.vjs-speed-button:hover {
+    color: #00a8e1;
+}
+
+/* estos es un experimento*/
+
+/* ==========================================
+   🎨 PERSONALIZACIÓN DE COLOR DE LA BARRA (#642119)
+   ========================================== */
+
+/* Fondo de la barra de controles */
+.video-js .vjs-control-bar {
+    background-color: #642119 !important;
+    border-top: 2px solid #ffbd15; /* Detalle amarillo en el borde superior */
+}
+
+/* Color de los botones e iconos (Play, Volumen, Pantalla Completa, etc.) */
+.video-js .vjs-button > .vjs-icon-placeholder::before,
+.video-js .vjs-time-control,
+.video-js .vjs-volume-panel {
+    color: #ffbd15 !important; /* Color dorado/amarillo como tus marquesinas */
+}
+
+/* Color de la barra de progreso cargada/reproducida */
+.video-js .vjs-play-progress {
+    background-color: #ffbd15 !important;
+}
+
+/* Forzar que el botón de Pantalla Completa sea visible siempre */
+.video-js .vjs-fullscreen-control {
+    display: flex !important;
+}
+
+/* ==========================================
+   🖼️ LOGO SUPERPUESTO EN EL VIDEO (WATERMARK)
+   ========================================== */
+.video-watermark {
+    position: absolute;
+    top: 95px;
+    right: 15px;
+    width: 60px; /* Puedes ajustar el tamaño */
+    height: auto;
+    z-index: 10;
+    opacity: 0.85; /* Un poco transparente para no tapar el contenido */
+    pointer-events: none; /* Permite hacer clic a través del logo */
+    transition: opacity 0.3s ease;
+}
+
+/* Efecto al pasar el cursor sobre el video */
+#videoContainer:hover .video-watermark {
+    opacity: 1;
+}
+
+
