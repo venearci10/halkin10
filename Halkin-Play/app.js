@@ -328,7 +328,7 @@ function startPeriodicAds() {
             
             // 1. Guardar la posición exacta donde se pausó el canal
             savedVideoTime = player.currentTime();
-            console.log(`⏰ 1 minutos cumplidos. Guardando tiempo de pausa: ${savedVideoTime}s`);
+            console.log(`⏰ 60 minutos cumplidos. Guardando tiempo de pausa: ${savedVideoTime}s`);
 
             // 2. Pausar la señal del canal
             player.pause();
