@@ -33,91 +33,115 @@ const DEFAULT_AD_URL = "https://raw.githubusercontent.com/angel10arcila/videos/r
 const DEFAULT_LOGO_URL = "https://raw.githubusercontent.com/venearci10/halkin10/refs/heads/main/Halkin1.png";
 
 // ==========================================
-// 🔑 EVENTOS Y AUTENTICACIÓN
+// 🔑 EVENTOS Y AUTENTICACIÓN (Delegación de eventos segura)
 // ==========================================
 
-const showRegister = document.getElementById('showRegister');
-if (showRegister) {
-    showRegister.onclick = () => {
-        document.getElementById('loginForm').style.display = 'none';
-        document.getElementById('registerForm').style.display = 'block';
-    };
-}
+document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("click", (e) => {
+        // Switch a registro
+        if (e.target && e.target.id === 'showRegister') {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            if (loginForm) loginForm.style.display = 'none';
+            if (registerForm) registerForm.style.display = 'block';
+        }
 
-const showLogin = document.getElementById('showLogin');
-if (showLogin) {
-    showLogin.onclick = () => {
-        document.getElementById('loginForm').style.display = 'block';
-        document.getElementById('registerForm').style.display = 'none';
-    };
-}
+        // Switch a login
+        if (e.target && e.target.id === 'showLogin') {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            if (loginForm) loginForm.style.display = 'block';
+            if (registerForm) registerForm.style.display = 'none';
+        }
 
-const loginBtn = document.getElementById('loginBtn');
-if (loginBtn) {
-    loginBtn.onclick = () => signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message));
-}
+        // Acción Iniciar Sesión
+        if (e.target && e.target.id === 'loginBtn') {
+            const emailInput = document.getElementById('email');
+            const passInput = document.getElementById('password');
+            if (emailInput && passInput) {
+                signInWithEmailAndPassword(auth, emailInput.value, passInput.value)
+                    .catch(e => alert("Error de inicio de sesión: " + e.message));
+            }
+        }
 
-const registerBtn = document.getElementById('registerBtn');
-if (registerBtn) {
-    registerBtn.onclick = () => createUserWithEmailAndPassword(auth, document.getElementById('regEmail').value, document.getElementById('regPassword').value).catch(e => alert(e.message));
-}
+        // Acción Registrarse
+        if (e.target && e.target.id === 'registerBtn') {
+            const regEmail = document.getElementById('regEmail');
+            const regPassword = document.getElementById('regPassword');
+            if (regEmail && regPassword) {
+                createUserWithEmailAndPassword(auth, regEmail.value, regPassword.value)
+                    .catch(e => alert("Error de registro: " + e.message));
+            }
+        }
 
-const googleBtn = document.getElementById('googleBtn');
-if (googleBtn) {
-    googleBtn.onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
-}
+        // Acción Google
+        if (e.target && e.target.id === 'googleBtn') {
+            signInWithPopup(auth, new GoogleAuthProvider())
+                .catch(e => alert("Error autenticación Google: " + e.message));
+        }
 
-const logoutBtn = document.getElementById('logoutBtn');
-if (logoutBtn) {
-    logoutBtn.onclick = () => signOut(auth);
-}
+        // Acción Cerrar Sesión
+        if (e.target && (e.target.id === 'logoutBtn' || e.target.closest('#logoutBtn'))) {
+            signOut(auth).catch(e => alert("Error al cerrar sesión: " + e.message));
+        }
+    });
+});
 
 onAuthStateChanged(auth, async (user) => {
     const grid = document.getElementById('contentGrid');
     const userDisplay = document.getElementById('userEmailDisplay');
     const logoutBtnEl = document.getElementById('logoutBtn');
     const navLogo = document.getElementById('navLogo');
+    const authOverlay = document.getElementById('authOverlay');
     
     if (user) {
-        document.getElementById('authOverlay').classList.add('hidden');
+        if (authOverlay) authOverlay.classList.add('hidden');
         if (logoutBtnEl) logoutBtnEl.classList.remove('hidden');
         if (navLogo) navLogo.classList.remove('hidden');
         
-        const username = user.email.split('@')[0];
+        const username = user.email ? user.email.split('@')[0] : 'Usuario';
         if (userDisplay) userDisplay.innerText = username;
         
         if (grid) {
-            const snap = await getDocs(collection(db, "content"));
-            grid.innerHTML = '';
-            snap.forEach(doc => {
-                const d = doc.data();
-                const card = document.createElement('div');
-                card.className = 'video-card';
-                card.innerHTML = `<img src="${d.thumbnailUrl}" loading="lazy"><h3>${d.title}</h3>`;
-                
-                // Comercial al iniciar el canal por primera vez
-                card.onclick = () => {
-                    const mainSource = d.sources || d.videoUrl;
-                    const options = { type: d.mimeType };
+            try {
+                const snap = await getDocs(collection(db, "content"));
+                grid.innerHTML = '';
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const card = document.createElement('div');
+                    card.className = 'video-card';
+                    card.innerHTML = `<img src="${d.thumbnailUrl}" loading="lazy"><h3>${d.title}</h3>`;
                     
-                    savedVideoTime = 0; // Reiniciar posición al cambiar de canal
-                    
-                    window.playCommercial(DEFAULT_AD_URL, () => {
-                        window.playVideo(mainSource, options);
-                    });
-                };
+                    // Comercial al iniciar el canal por primera vez
+                    card.onclick = () => {
+                        const mainSource = d.sources || d.videoUrl;
+                        const options = { type: d.mimeType };
+                        
+                        savedVideoTime = 0; // Reiniciar posición al cambiar de canal
+                        
+                        window.playCommercial(DEFAULT_AD_URL, () => {
+                            window.playVideo(mainSource, options);
+                        });
+                    };
 
-                grid.appendChild(card);
-            });
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Error al obtener contenido de Firestore:", err);
+            }
         }
     } else {
-        document.getElementById('authOverlay').classList.add('hidden');
+        // CORRECCIÓN CLAVE: Remueve 'hidden' para volver a mostrar el login
+        if (authOverlay) authOverlay.classList.remove('hidden');
         if (logoutBtnEl) logoutBtnEl.classList.add('hidden');
         if (navLogo) navLogo.classList.add('hidden');
         
         if (userDisplay) userDisplay.innerText = '';
         if (grid) grid.innerHTML = ''; 
-        document.getElementById('videoContainer').classList.add('hidden');
+        
+        const videoContainer = document.getElementById('videoContainer');
+        if (videoContainer) videoContainer.classList.add('hidden');
+        
         if (player) player.pause();
         if (adTimerInterval) clearInterval(adTimerInterval);
     }
@@ -239,7 +263,7 @@ function getOrCreatePlayer() {
                     }));
                     items[1].handleClick = function() {
                         const container = document.getElementById('videoContainer');
-                        if (!document.getElementById('screenLockOverlay')) {
+                        if (container && !document.getElementById('screenLockOverlay')) {
                             const lockOverlay = document.createElement('div');
                             lockOverlay.className = 'screen-locked-overlay';
                             lockOverlay.id = 'screenLockOverlay';
@@ -280,11 +304,20 @@ function getOrCreatePlayer() {
 // 📺 REPRODUCCIÓN Y COMERCIALES
 // ==========================================
 
+// 🛡️ SOLUCIÓN PARA BLOQUEOS DE CORS Y HTTPS EN GITHUB PAGES
 function formatStreamUrl(rawUrl) {
     if (!rawUrl) return '';
-    if (window.location.protocol === 'https:' && rawUrl.startsWith('http://')) {
+
+    // Evitar duplicación si la URL ya contiene el proxy
+    if (rawUrl.includes('corsproxy.io')) {
+        return rawUrl;
+    }
+
+    // Usar proxy si es transmisión HTTP insegura o si la app corre en GitHub Pages
+    if (rawUrl.startsWith('http://') || window.location.hostname.includes('github.io')) {
         return `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
     }
+
     return rawUrl;
 }
 
@@ -293,7 +326,8 @@ window.playCommercial = function(adUrl, onAdEndedCallback) {
     const activePlayer = getOrCreatePlayer();
     if (!activePlayer) return;
 
-    document.getElementById('videoContainer').classList.remove('hidden');
+    const container = document.getElementById('videoContainer');
+    if (container) container.classList.remove('hidden');
 
     console.log("🎬 Reproduciendo comercial...");
 
@@ -318,17 +352,16 @@ window.playCommercial = function(adUrl, onAdEndedCallback) {
     });
 };
 
-// Temporizador para pausa y comercial cada 3 minutos
+// Temporizador para pausa y comercial cada 3 minutos (180,000 ms)
 function startPeriodicAds() {
     if (adTimerInterval) clearInterval(adTimerInterval);
 
-    // 3 minutos = 180,000 ms
     adTimerInterval = setInterval(() => {
         if (player && !player.paused() && currentMainSource) {
             
             // 1. Guardar la posición exacta donde se pausó el canal
             savedVideoTime = player.currentTime();
-            console.log(`⏰ 3 minutos cumplidos. Guardando tiempo de pausa: ${savedVideoTime}s`);
+            console.log(`⏰ Intervalo de comercial alcanzado. Guardando tiempo de pausa: ${savedVideoTime}s`);
 
             // 2. Pausar la señal del canal
             player.pause();
@@ -353,7 +386,8 @@ window.playVideo = (sources, options = {}, resetTimer = true) => {
         localStream = null;
     }
 
-    document.getElementById('videoContainer').classList.remove('hidden');
+    const container = document.getElementById('videoContainer');
+    if (container) container.classList.remove('hidden');
 
     if (Array.isArray(sources)) {
         const formattedSources = sources.map(s => {
@@ -456,4 +490,4 @@ function startTelemetryMonitor() {
 function updateStatUI(elementId, textValue) {
     const el = document.getElementById(elementId);
     if (el) el.innerText = textValue;
-    }
+}
