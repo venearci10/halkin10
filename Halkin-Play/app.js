@@ -33,12 +33,12 @@ const DEFAULT_AD_URL = "https://raw.githubusercontent.com/angel10arcila/videos/r
 const DEFAULT_LOGO_URL = "https://raw.githubusercontent.com/venearci10/halkin10/refs/heads/main/Halkin1.png";
 
 // ==========================================
-// 🔑 EVENTOS Y AUTENTICACIÓN (Delegación de eventos segura)
+// 🔑 EVENTOS Y AUTENTICACIÓN (Delegación Segura)
 // ==========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("click", (e) => {
-        // Switch a registro
+        // Mostrar Registro
         if (e.target && e.target.id === 'showRegister') {
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (registerForm) registerForm.style.display = 'block';
         }
 
-        // Switch a login
+        // Mostrar Login
         if (e.target && e.target.id === 'showLogin') {
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
@@ -54,33 +54,33 @@ document.addEventListener("DOMContentLoaded", () => {
             if (registerForm) registerForm.style.display = 'none';
         }
 
-        // Acción Iniciar Sesión
+        // Botón Iniciar Sesión
         if (e.target && e.target.id === 'loginBtn') {
             const emailInput = document.getElementById('email');
             const passInput = document.getElementById('password');
             if (emailInput && passInput) {
                 signInWithEmailAndPassword(auth, emailInput.value, passInput.value)
-                    .catch(e => alert("Error de inicio de sesión: " + e.message));
+                    .catch(e => alert("Error al iniciar sesión: " + e.message));
             }
         }
 
-        // Acción Registrarse
+        // Botón Registrarse
         if (e.target && e.target.id === 'registerBtn') {
-            const regEmail = document.getElementById('regEmail');
-            const regPassword = document.getElementById('regPassword');
-            if (regEmail && regPassword) {
-                createUserWithEmailAndPassword(auth, regEmail.value, regPassword.value)
-                    .catch(e => alert("Error de registro: " + e.message));
+            const regEmailInput = document.getElementById('regEmail');
+            const regPassInput = document.getElementById('regPassword');
+            if (regEmailInput && regPassInput) {
+                createUserWithEmailAndPassword(auth, regEmailInput.value, regPassInput.value)
+                    .catch(e => alert("Error al registrarse: " + e.message));
             }
         }
 
-        // Acción Google
+        // Botón Google
         if (e.target && e.target.id === 'googleBtn') {
             signInWithPopup(auth, new GoogleAuthProvider())
-                .catch(e => alert("Error autenticación Google: " + e.message));
+                .catch(e => alert("Error con Google: " + e.message));
         }
 
-        // Acción Cerrar Sesión
+        // Botón Cerrar Sesión
         if (e.target && (e.target.id === 'logoutBtn' || e.target.closest('#logoutBtn'))) {
             signOut(auth).catch(e => alert("Error al cerrar sesión: " + e.message));
         }
@@ -127,11 +127,11 @@ onAuthStateChanged(auth, async (user) => {
                     grid.appendChild(card);
                 });
             } catch (err) {
-                console.error("Error al obtener contenido de Firestore:", err);
+                console.error("Error al cargar contenido de Firestore:", err);
             }
         }
     } else {
-        // CORRECCIÓN CLAVE: Remueve 'hidden' para volver a mostrar el login
+        // FIX CRÍTICO: remueve 'hidden' para volver a mostrar el formulario de login al cerrar sesión
         if (authOverlay) authOverlay.classList.remove('hidden');
         if (logoutBtnEl) logoutBtnEl.classList.add('hidden');
         if (navLogo) navLogo.classList.add('hidden');
@@ -211,7 +211,6 @@ function getOrCreatePlayer() {
             });
 
             videojs.registerComponent('BrandLogoComponent', BrandLogoComponent);
-            // Se inserta en el índice 0 para quedar a la izquierda, antes del botón de Play
             player.getChild('controlBar').addChild('BrandLogoComponent', {}, 0);
 
             // Botón de Velocidad ("1x")
@@ -304,16 +303,14 @@ function getOrCreatePlayer() {
 // 📺 REPRODUCCIÓN Y COMERCIALES
 // ==========================================
 
-// 🛡️ SOLUCIÓN PARA BLOQUEOS DE CORS Y HTTPS EN GITHUB PAGES
+// FIX MEJORADO: Manejo de CORS en GitHub Pages e HTTP inseguro
 function formatStreamUrl(rawUrl) {
     if (!rawUrl) return '';
 
-    // Evitar duplicación si la URL ya contiene el proxy
     if (rawUrl.includes('corsproxy.io')) {
         return rawUrl;
     }
 
-    // Usar proxy si es transmisión HTTP insegura o si la app corre en GitHub Pages
     if (rawUrl.startsWith('http://') || window.location.hostname.includes('github.io')) {
         return `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
     }
@@ -343,30 +340,26 @@ window.playCommercial = function(adUrl, onAdEndedCallback) {
         if (onAdEndedCallback) onAdEndedCallback();
     });
 
-    // Al terminar el comercial se reanuda la señal exactamente donde se pausó
     activePlayer.one('ended', function() {
-        console.log("✅ Comercial finalizado. Reanudando canal en el punto exacto...");
+        console.log("✅ Comercial finalizado. Reanudando canal...");
         if (typeof onAdEndedCallback === 'function') {
             onAdEndedCallback();
         }
     });
 };
 
-// Temporizador para pausa y comercial cada 3 minutos (180,000 ms)
+// Temporizador para comercial cada 3 minutos (180,000 ms)
 function startPeriodicAds() {
     if (adTimerInterval) clearInterval(adTimerInterval);
 
     adTimerInterval = setInterval(() => {
         if (player && !player.paused() && currentMainSource) {
             
-            // 1. Guardar la posición exacta donde se pausó el canal
             savedVideoTime = player.currentTime();
-            console.log(`⏰ 3 Intervalo de comercial alcanzado. Guardando tiempo de pausa: ${savedVideoTime}s`);
+            console.log(`⏰ 3 minutos cumplidos. Guardando tiempo de pausa: ${savedVideoTime}s`);
 
-            // 2. Pausar la señal del canal
             player.pause();
 
-            // 3. Reproducir comercial y volver exactamente al segundo guardado
             window.playCommercial(DEFAULT_AD_URL, () => {
                 window.playVideo(currentMainSource, currentMainOptions, false);
             });
@@ -406,12 +399,11 @@ window.playVideo = (sources, options = {}, resetTimer = true) => {
         });
     }
 
-    // Al cargar los metadatos del canal, restaurar el tiempo guardado si aplica
     activePlayer.one('loadedmetadata', function() {
         if (savedVideoTime > 0) {
             console.log(`Restaurando emisión al segundo: ${savedVideoTime}`);
             activePlayer.currentTime(savedVideoTime);
-            savedVideoTime = 0; // Limpiar para el próximo ciclo
+            savedVideoTime = 0; 
         }
     });
 
@@ -490,4 +482,5 @@ function startTelemetryMonitor() {
 function updateStatUI(elementId, textValue) {
     const el = document.getElementById(elementId);
     if (el) el.innerText = textValue;
-}
+            }
+                                      
