@@ -131,7 +131,7 @@ onAuthStateChanged(auth, async (user) => {
             }
         }
     } else {
-        // FIX CRÍTICO: remueve 'hidden' para volver a mostrar el formulario de login al cerrar sesión
+        // Muestra el formulario de login al cerrar sesión
         if (authOverlay) authOverlay.classList.remove('hidden');
         if (logoutBtnEl) logoutBtnEl.classList.add('hidden');
         if (navLogo) navLogo.classList.add('hidden');
@@ -187,7 +187,7 @@ function getOrCreatePlayer() {
                 }
             });
 
-            // 🏷️ COMPONENTE: LOGO EN LA BARRA ANTES DEL BOTÓN PLAY
+            // LOGO EN LA BARRA ANTES DEL BOTÓN PLAY
             const Component = videojs.getComponent('Component');
             const BrandLogoComponent = videojs.extend(Component, {
                 constructor: function(player, options) {
@@ -297,28 +297,47 @@ function getOrCreatePlayer() {
         }
     }
     return player;
-}
-
+                }
+                // ==========================================
+// 📺 REPRODUCCIÓN Y MANEJO RIGUROSO DE ENLACES
 // ==========================================
-// 📺 REPRODUCCIÓN Y COMERCIALES
-// ==========================================
 
-// FIX MEJORADO: Manejo de CORS en GitHub Pages e HTTP inseguro
-function formatStreamUrl(rawUrl) {
+function formatStreamUrl(rawUrl, useProxy = false) {
     if (!rawUrl) return '';
 
-    if (rawUrl.includes('corsproxy.io')) {
-        return rawUrl;
+    let cleanUrl = rawUrl.trim();
+
+    if (cleanUrl.includes('corsproxy.io') || cleanUrl.startsWith('blob:')) {
+        return cleanUrl;
     }
 
-    if (rawUrl.startsWith('http://') || window.location.hostname.includes('github.io')) {
-        return `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
+    // Si requiere proxy por CORS o si es HTTP inseguro desde HTTPS
+    if (useProxy || (window.location.protocol === 'https:' && cleanUrl.startsWith('http://'))) {
+        return `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`;
     }
 
-    return rawUrl;
+    return cleanUrl;
 }
 
-// Lógica de comercial
+function inferMimeType(url) {
+    if (!url) return 'application/x-mpegURL';
+    
+    const pathOnly = url.split('?')[0].toLowerCase();
+
+    if (pathOnly.endsWith('.m3u8') || url.includes('.m3u8')) {
+        return 'application/x-mpegURL';
+    }
+    if (pathOnly.endsWith('.mpd') || url.includes('.mpd')) {
+        return 'application/dash+xml';
+    }
+    if (pathOnly.endsWith('.mp4')) {
+        return 'video/mp4';
+    }
+    
+    return 'application/x-mpegURL';
+}
+
+// Lógica del comercial con recuperador automático de fallos
 window.playCommercial = function(adUrl, onAdEndedCallback) {
     const activePlayer = getOrCreatePlayer();
     if (!activePlayer) return;
@@ -330,18 +349,27 @@ window.playCommercial = function(adUrl, onAdEndedCallback) {
 
     const finalAdUrl = formatStreamUrl(adUrl || DEFAULT_AD_URL);
 
+    // Si falla el comercial, saltar directamente al canal
+    activePlayer.one('error', function() {
+        console.warn("⚠️ Comercial no disponible. Cargando canal...");
+        activePlayer.error(null);
+        if (typeof onAdEndedCallback === 'function') {
+            onAdEndedCallback();
+        }
+    });
+
     activePlayer.src({
         src: finalAdUrl,
         type: inferMimeType(finalAdUrl)
     });
 
     activePlayer.play().catch(e => {
-        console.log("Interacción requerida para el comercial, reanudando canal...");
+        console.log("Interacción requerida para comercial. Saltando al canal...");
         if (onAdEndedCallback) onAdEndedCallback();
     });
 
     activePlayer.one('ended', function() {
-        console.log("✅ Comercial finalizado. Reanudando canal...");
+        console.log("✅ Comercial finalizado.");
         if (typeof onAdEndedCallback === 'function') {
             onAdEndedCallback();
         }
@@ -382,22 +410,40 @@ window.playVideo = (sources, options = {}, resetTimer = true) => {
     const container = document.getElementById('videoContainer');
     if (container) container.classList.remove('hidden');
 
-    if (Array.isArray(sources)) {
-        const formattedSources = sources.map(s => {
-            if (typeof s === 'string') {
-                return { src: formatStreamUrl(s), type: inferMimeType(s) };
-            }
-            return { ...s, src: formatStreamUrl(s.src) };
-        });
-        activePlayer.src(formattedSources);
-    } else {
-        let finalUrl = formatStreamUrl(sources);
-        let detectedType = options.type || inferMimeType(sources);
-        activePlayer.src({ 
-            src: finalUrl, 
-            type: detectedType 
-        });
-    }
+    let rawSrc = Array.isArray(sources) ? (sources[0]?.src || sources[0]) : sources;
+    let mimeType = options.type || inferMimeType(rawSrc);
+
+    // Intento inicial nativo
+    let finalUrl = formatStreamUrl(rawSrc, false);
+
+    // Limpiar errores residuales
+    activePlayer.error(null);
+
+    // Manejador de error con fallback automático a Proxy si el servidor bloquea CORS
+    activePlayer.one('error', function() {
+        const err = activePlayer.error();
+        console.warn("⚠️ Error en reproducción nativa:", err);
+
+        if (err && !rawSrc.includes('corsproxy.io')) {
+            console.log("🔄 Reintentando señal vía Proxy CORS...");
+            activePlayer.error(null);
+            
+            const proxyUrl = formatStreamUrl(rawSrc, true);
+            
+            activePlayer.src({
+                src: proxyUrl,
+                type: mimeType
+            });
+            
+            activePlayer.play().catch(e => console.log("Reintento requiere interacción."));
+        }
+    });
+
+    // Carga de la fuente
+    activePlayer.src({ 
+        src: finalUrl, 
+        type: mimeType 
+    });
 
     activePlayer.one('loadedmetadata', function() {
         if (savedVideoTime > 0) {
@@ -413,16 +459,6 @@ window.playVideo = (sources, options = {}, resetTimer = true) => {
         }
     }).catch(e => console.log("Interacción de reproducción requerida."));
 };
-
-function inferMimeType(url) {
-    if (!url) return 'video/mp4';
-    if (url.includes('.m3u8')) return 'application/x-mpegURL';
-    if (url.includes('.mpd')) return 'application/dash+xml';
-    if (url.includes('.mp3')) return 'audio/mp3';
-    if (url.includes('.aac')) return 'audio/aac';
-    if (url.includes('.webm')) return 'video/webm';
-    return 'video/mp4';
-}
 
 // ==========================================
 // 📊 TELEMETRÍA Y MONITOR
@@ -482,5 +518,5 @@ function startTelemetryMonitor() {
 function updateStatUI(elementId, textValue) {
     const el = document.getElementById(elementId);
     if (el) el.innerText = textValue;
-            }
-                                      
+        }
+                     
