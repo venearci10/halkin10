@@ -297,8 +297,7 @@ function getOrCreatePlayer() {
         }
     }
     return player;
-                }
-                // ==========================================
+ // ==========================================
 // 📺 REPRODUCCIÓN Y MANEJO RIGUROSO DE ENLACES
 // ==========================================
 
@@ -307,12 +306,13 @@ function formatStreamUrl(rawUrl, useProxy = false) {
 
     let cleanUrl = rawUrl.trim();
 
+    // Si ya tiene proxy aplicado o es una URL blob, retornar directamente
     if (cleanUrl.includes('corsproxy.io') || cleanUrl.startsWith('blob:')) {
         return cleanUrl;
     }
 
-    // Si requiere proxy por CORS o si es HTTP inseguro desde HTTPS
-    if (useProxy || (window.location.protocol === 'https:' && cleanUrl.startsWith('http://'))) {
+    // FORZADO AUTOMÁTICO: Si la URL empieza por http:// o si el entorno exige proxy
+    if (useProxy || cleanUrl.startsWith('http://')) {
         return `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`;
     }
 
@@ -413,19 +413,19 @@ window.playVideo = (sources, options = {}, resetTimer = true) => {
     let rawSrc = Array.isArray(sources) ? (sources[0]?.src || sources[0]) : sources;
     let mimeType = options.type || inferMimeType(rawSrc);
 
-    // Intento inicial nativo
-    let finalUrl = formatStreamUrl(rawSrc, false);
+    // Forzar engranaje de proxy inmediato si el enlace es HTTP no seguro
+    let finalUrl = formatStreamUrl(rawSrc, rawSrc.startsWith('http://'));
 
     // Limpiar errores residuales
     activePlayer.error(null);
 
-    // Manejador de error con fallback automático a Proxy si el servidor bloquea CORS
+    // Manejador de error secundario por si requiere enrutamiento alternativo
     activePlayer.one('error', function() {
         const err = activePlayer.error();
-        console.warn("⚠️ Error en reproducción nativa:", err);
+        console.warn("⚠️ Error en reproducción de la transmisión:", err);
 
-        if (err && !rawSrc.includes('corsproxy.io')) {
-            console.log("🔄 Reintentando señal vía Proxy CORS...");
+        if (err && !finalUrl.includes('corsproxy.io')) {
+            console.log("🔄 Reintentando señal con engranaje Proxy CORS...");
             activePlayer.error(null);
             
             const proxyUrl = formatStreamUrl(rawSrc, true);
@@ -518,5 +518,6 @@ function startTelemetryMonitor() {
 function updateStatUI(elementId, textValue) {
     const el = document.getElementById(elementId);
     if (el) el.innerText = textValue;
-        }
-                     
+                                                                 }
+}
+                
