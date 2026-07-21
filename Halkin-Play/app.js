@@ -21,10 +21,10 @@ let player = null;
 let qualityLevels = null;
 let statsInterval = null;
 let localStream = null;
-let adTimerInterval = null; // Temporizador para comercial periódico
-let currentMainSource = null; // Guarda el canal actual
+let adTimerInterval = null;
+let currentMainSource = null;
 let currentMainOptions = {};
-let savedVideoTime = 0; // Guarda el segundo exacto donde se pausó el canal
+let savedVideoTime = 0;
 
 // =========================================================================
 // 📢 [CONFIGURACIÓN DE URLS - COMERCIAL Y LOGO EN BARRA]
@@ -110,19 +110,29 @@ onAuthStateChanged(auth, async (user) => {
                     const d = doc.data();
                     const card = document.createElement('div');
                     card.className = 'video-card';
-                    card.innerHTML = `<img src="${d.thumbnailUrl}" loading="lazy"><h3>${d.title}</h3>`;
+                    card.style.cursor = 'pointer';
+                    card.innerHTML = `<img src="${d.thumbnailUrl}" loading="lazy" style="pointer-events:none;"><h3 style="pointer-events:none;">${d.title}</h3>`;
                     
-                    // Comercial al iniciar el canal por primera vez
-                    card.onclick = () => {
+                    // Manejador del clic asegurado
+                    card.addEventListener('click', (evt) => {
+                        evt.preventDefault();
+                        
+                        const videoContainer = document.getElementById('videoContainer');
+                        if (videoContainer) {
+                            videoContainer.classList.remove('hidden');
+                            videoContainer.style.display = 'block';
+                            videoContainer.scrollIntoView({ behavior: 'smooth' });
+                        }
+
                         const mainSource = d.sources || d.videoUrl;
                         const options = { type: d.mimeType };
                         
-                        savedVideoTime = 0; // Reiniciar posición al cambiar de canal
+                        savedVideoTime = 0;
                         
                         window.playCommercial(DEFAULT_AD_URL, () => {
                             window.playVideo(mainSource, options);
                         });
-                    };
+                    });
 
                     grid.appendChild(card);
                 });
@@ -131,7 +141,6 @@ onAuthStateChanged(auth, async (user) => {
             }
         }
     } else {
-        // Muestra el formulario de login al cerrar sesión
         if (authOverlay) authOverlay.classList.remove('hidden');
         if (logoutBtnEl) logoutBtnEl.classList.add('hidden');
         if (navLogo) navLogo.classList.add('hidden');
@@ -297,7 +306,8 @@ function getOrCreatePlayer() {
         }
     }
     return player;
- // ==========================================
+                }
+                                // ==========================================
 // 📺 REPRODUCCIÓN Y MANEJO RIGUROSO DE ENLACES
 // ==========================================
 
@@ -306,12 +316,11 @@ function formatStreamUrl(rawUrl, useProxy = false) {
 
     let cleanUrl = rawUrl.trim();
 
-    // Si ya tiene proxy aplicado o es una URL blob, retornar directamente
     if (cleanUrl.includes('corsproxy.io') || cleanUrl.startsWith('blob:')) {
         return cleanUrl;
     }
 
-    // FORZADO AUTOMÁTICO: Si la URL empieza por http:// o si el entorno exige proxy
+    // Usar proxy si es HTTP o si falló la conexión inicial en HTTPS
     if (useProxy || cleanUrl.startsWith('http://')) {
         return `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`;
     }
@@ -337,25 +346,35 @@ function inferMimeType(url) {
     return 'application/x-mpegURL';
 }
 
-// Lógica del comercial con recuperador automático de fallos
+// Lógica del comercial con recuperador automático
 window.playCommercial = function(adUrl, onAdEndedCallback) {
     const activePlayer = getOrCreatePlayer();
     if (!activePlayer) return;
 
     const container = document.getElementById('videoContainer');
-    if (container) container.classList.remove('hidden');
+    if (container) {
+        container.classList.remove('hidden');
+        container.style.display = 'block';
+    }
 
     console.log("🎬 Reproduciendo comercial...");
 
     const finalAdUrl = formatStreamUrl(adUrl || DEFAULT_AD_URL);
 
-    // Si falla el comercial, saltar directamente al canal
+    let adHandled = false;
+    const finishAd = () => {
+        if (!adHandled) {
+            adHandled = true;
+            if (typeof onAdEndedCallback === 'function') {
+                onAdEndedCallback();
+            }
+        }
+    };
+
     activePlayer.one('error', function() {
         console.warn("⚠️ Comercial no disponible. Cargando canal...");
         activePlayer.error(null);
-        if (typeof onAdEndedCallback === 'function') {
-            onAdEndedCallback();
-        }
+        finishAd();
     });
 
     activePlayer.src({
@@ -364,27 +383,24 @@ window.playCommercial = function(adUrl, onAdEndedCallback) {
     });
 
     activePlayer.play().catch(e => {
-        console.log("Interacción requerida para comercial. Saltando al canal...");
-        if (onAdEndedCallback) onAdEndedCallback();
+        console.log("Autoplay de comercial restringido por el navegador. Pasando al canal...");
+        finishAd();
     });
 
     activePlayer.one('ended', function() {
         console.log("✅ Comercial finalizado.");
-        if (typeof onAdEndedCallback === 'function') {
-            onAdEndedCallback();
-        }
+        finishAd();
     });
 };
 
-// Temporizador para comercial cada 3 minutos (180,000 ms)
+// Temporizador para comercial cada 3 minutos
 function startPeriodicAds() {
     if (adTimerInterval) clearInterval(adTimerInterval);
 
     adTimerInterval = setInterval(() => {
         if (player && !player.paused() && currentMainSource) {
-            
             savedVideoTime = player.currentTime();
-            console.log(`⏰ 3 minutos cumplidos. Guardando tiempo de pausa: ${savedVideoTime}s`);
+            console.log(`⏰ 3 minutos cumplidos. Guardando segundo: ${savedVideoTime}s`);
 
             player.pause();
 
@@ -408,38 +424,46 @@ window.playVideo = (sources, options = {}, resetTimer = true) => {
     }
 
     const container = document.getElementById('videoContainer');
-    if (container) container.classList.remove('hidden');
+    if (container) {
+        container.classList.remove('hidden');
+        container.style.display = 'block';
+    }
 
     let rawSrc = Array.isArray(sources) ? (sources[0]?.src || sources[0]) : sources;
     let mimeType = options.type || inferMimeType(rawSrc);
 
-    // Forzar engranaje de proxy inmediato si el enlace es HTTP no seguro
-    let finalUrl = formatStreamUrl(rawSrc, rawSrc.startsWith('http://'));
+    let isHttp = rawSrc.startsWith('http://');
+    let finalUrl = formatStreamUrl(rawSrc, isHttp);
 
-    // Limpiar errores residuales
     activePlayer.error(null);
 
-    // Manejador de error secundario por si requiere enrutamiento alternativo
-    activePlayer.one('error', function() {
+    // Sistema de reintento si el canal no soporta conexión directa
+    const handleError = function() {
         const err = activePlayer.error();
-        console.warn("⚠️ Error en reproducción de la transmisión:", err);
+        console.warn("⚠️ Error de señal nativa:", err);
 
         if (err && !finalUrl.includes('corsproxy.io')) {
-            console.log("🔄 Reintentando señal con engranaje Proxy CORS...");
+            console.log("🔄 Reintentando con engranaje Proxy CORS...");
+            activePlayer.off('error', handleError);
             activePlayer.error(null);
             
             const proxyUrl = formatStreamUrl(rawSrc, true);
-            
+            finalUrl = proxyUrl;
+
             activePlayer.src({
                 src: proxyUrl,
                 type: mimeType
             });
             
-            activePlayer.play().catch(e => console.log("Reintento requiere interacción."));
+            activePlayer.play().catch(() => {
+                activePlayer.muted(true);
+                activePlayer.play().catch(e => console.log("Se requiere interacción manual."));
+            });
         }
-    });
+    };
 
-    // Carga de la fuente
+    activePlayer.one('error', handleError);
+
     activePlayer.src({ 
         src: finalUrl, 
         type: mimeType 
@@ -447,7 +471,6 @@ window.playVideo = (sources, options = {}, resetTimer = true) => {
 
     activePlayer.one('loadedmetadata', function() {
         if (savedVideoTime > 0) {
-            console.log(`Restaurando emisión al segundo: ${savedVideoTime}`);
             activePlayer.currentTime(savedVideoTime);
             savedVideoTime = 0; 
         }
@@ -457,7 +480,13 @@ window.playVideo = (sources, options = {}, resetTimer = true) => {
         if (resetTimer) {
             startPeriodicAds();
         }
-    }).catch(e => console.log("Interacción de reproducción requerida."));
+    }).catch(e => {
+        console.log("Intento silenciado para evitar bloqueo del navegador...");
+        activePlayer.muted(true);
+        activePlayer.play().then(() => {
+            if (resetTimer) startPeriodicAds();
+        }).catch(err => console.log("Toca el reproductor para dar play."));
+    });
 };
 
 // ==========================================
@@ -518,6 +547,5 @@ function startTelemetryMonitor() {
 function updateStatUI(elementId, textValue) {
     const el = document.getElementById(elementId);
     if (el) el.innerText = textValue;
-                                                                 }
 }
-                
+    
