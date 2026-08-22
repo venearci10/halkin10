@@ -400,7 +400,7 @@ function startPeriodicAds() {
     adTimerInterval = setInterval(() => {
         if (player && !player.paused() && currentMainSource) {
             savedVideoTime = player.currentTime();
-            console.log(`⏰ 3 minutos cumplidos. Guardando segundo: ${savedVideoTime}s`);
+            console.log(`⏰ 120 minutos cumplidos. Guardando segundo: ${savedVideoTime}s`);
 
             player.pause();
 
