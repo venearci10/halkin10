@@ -408,7 +408,7 @@ function startPeriodicAds() {
                 window.playVideo(currentMainSource, currentMainOptions, false);
             });
         }
-    }, 180000); 
+    }, 7200000); 
 }
 
 window.playVideo = (sources, options = {}, resetTimer = true) => {
